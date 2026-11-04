@@ -94,8 +94,8 @@ async function analyze() {
 
 <template>
   <PageHeader
-    title="看见自己的饮食小习惯。"
-    description="根据已保存的饮食记录统计，不为未记录的生活下结论。"
+    title="饮食习惯"
+    description="只统计已经记下的餐。没记的日期不算没吃。"
   />
   <section class="panel habit-range">
     <label
@@ -143,9 +143,7 @@ async function analyze() {
       />
     </section>
     <aside class="panel insight">
-      <span class="eyebrow">LITTLE STEPS, BIG DIFFERENCE</span>
-      <h2>从记录，开始了解自己。</h2>
-      <span class="insight-emoji">🌱</span>
+      <h2>已记下的</h2>
       <p v-if="!stats.recordCount">
         这段时间暂无记录。记录几餐后，回来看看变化吧。
       </p>
@@ -155,9 +153,9 @@ async function analyze() {
         {{ stats.breakfastDays }} 天有早餐记录。未记录的日期无法判断是否用餐。
       </p>
       <p>
-        这是已记录数据的统计摘要，数据不足以判断长期习惯。继续记录，能帮助你更完整地回顾生活。
+        这是已记下内容的统计。记录还少也值得看看，之后记得多一些，回顾会更贴近您的日常。
       </p>
-      <RouterLink to="/records" class="secondary">再记录一餐 →</RouterLink>
+      <RouterLink to="/records" class="secondary">再记录一餐</RouterLink>
     </aside>
   </div>
   <section class="panel">
@@ -180,8 +178,7 @@ async function analyze() {
   >
     <div class="ai-habit-heading">
       <div>
-        <span class="eyebrow">LOOK BACK, TAKE A SMALL STEP</span>
-        <h2>{{ isDemo ? "试试饮食记录回顾" : "让食刻陪你回顾一下" }}</h2>
+        <h2>{{ isDemo ? "饮食记录回顾" : "回顾这段记录" }}</h2>
         <p>把统计变成易读的观察，再给下一餐一个小行动。</p>
       </div>
       <button
@@ -190,7 +187,7 @@ async function analyze() {
         :disabled="busy || !stats.recordCount"
         @click="analyze"
       >
-        <Icon name="Sparkles" :size="18" />{{
+        {{
           busy
             ? "正在生成回顾…"
             : report
@@ -205,7 +202,7 @@ async function analyze() {
       所选范围暂无记录，先记下实际吃过的一餐，再来生成回顾。
     </p>
     <p v-else-if="stats.recordedDays < 3" class="notice small">
-      记录覆盖不足 3 天，只适合回顾已记录内容，暂不足以判断长期习惯。
+      记录还不多。回顾会按您已经记下的这几餐来写，并轻轻说说下一步。
     </p>
     <p class="source-note">
       {{
@@ -223,20 +220,24 @@ async function analyze() {
 <style scoped>
 .habit-range {
   display: flex;
-  align-items: center;
-  gap: 22px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
   margin-bottom: 20px;
-  flex-wrap: wrap;
 }
 .habit-range label {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 12px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  max-width: 280px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a241c;
 }
 .habit-range select {
-  width: auto;
-  min-width: 125px;
+  width: 100%;
+  min-width: 0;
 }
 .ai-habit-panel {
   margin-top: 24px;
@@ -249,7 +250,7 @@ async function analyze() {
   flex-wrap: wrap;
 }
 .ai-habit-heading p {
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 7px;
 }
 .ai-habit-panel > .source-note {

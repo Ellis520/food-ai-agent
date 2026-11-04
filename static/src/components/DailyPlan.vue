@@ -2,8 +2,7 @@
 import { computed } from "vue";
 import { useApp } from "../stores/app";
 import { foods } from "../api/mock";
-import Icon from "./Icon.vue";
-const props = defineProps<{ date: string }>();
+const props = defineProps<{ date: string; compact?: boolean }>();
 const app = useApp();
 const items = computed(() => app.plans[props.date] || []);
 function logged(slot: string) {
@@ -15,14 +14,20 @@ const completed = computed(
 </script>
 
 <template>
-  <section class="panel daily-plan" aria-label="计划打卡">
-    <div class="between">
-      <h2>{{ date === app.today ? "今日" : "已保存的" }}计划打卡</h2>
+  <section
+    class="panel daily-plan"
+    :class="{ 'is-compact': compact }"
+    aria-label="计划打卡"
+  >
+    <div class="plan-head">
+      <h2 v-if="!compact">
+        {{ date === app.today ? "今日" : "已保存的" }}计划打卡
+      </h2>
       <span v-if="items.length" class="tag"
         >已记录 {{ completed }} / {{ items.length }} 餐</span
       >
     </div>
-    <p class="small muted">
+    <p v-if="!compact" class="small muted">
       按实际用餐确认，计划不会自动计入摄入。修改计划不会改动已经保存的饮食记录。
     </p>
     <div v-if="items.length" class="daily-plan-grid">
@@ -32,12 +37,12 @@ const completed = computed(
         class="daily-plan-meal"
         :aria-label="item.slot + '计划'"
       >
-        <span class="meal-symbol" aria-hidden="true">{{
-          foods.find((food) => food.id === item.foodId)?.emoji || "🍽️"
-        }}</span>
+        <span class="slot-name">{{ item.slot }}</span>
         <div class="meal-copy">
-          <span class="small muted">{{ item.slot }}</span>
           <h3>
+            <span class="meal-symbol" aria-hidden="true">{{
+              foods.find((food) => food.id === item.foodId)?.emoji || "🍽️"
+            }}</span>
             {{
               item.dishName ||
               foods.find((food) => food.id === item.foodId)?.name
@@ -53,7 +58,7 @@ const completed = computed(
           v-if="logged(item.slot)"
           :to="{ path: '/records', query: { date } }"
           class="text-btn"
-          ><Icon name="CircleCheck" :size="16" /> 查看记录</RouterLink
+          >查看记录</RouterLink
         >
         <RouterLink
           v-else-if="date <= app.today"
@@ -66,8 +71,13 @@ const completed = computed(
       </article>
     </div>
     <div v-else class="plan-start">
-      <p>还没有保存这天的计划，先给三餐留一点期待。</p>
-      <RouterLink to="/plan" class="text-btn">去规划三餐 →</RouterLink>
+      <ol class="empty-meals">
+        <li v-for="slot in ['早餐', '午餐', '晚餐']" :key="slot">
+          <span class="slot-name">{{ slot }}</span>
+          <span>未安排</span>
+        </li>
+      </ol>
+      <RouterLink to="/plan" class="text-btn">去规划三餐</RouterLink>
     </div>
   </section>
 </template>
@@ -76,76 +86,91 @@ const completed = computed(
 .daily-plan {
   margin: 24px 0;
 }
-.daily-plan > .between {
+.daily-plan.is-compact {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+.plan-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
+}
+.tag {
+  font-size: 13px;
 }
 .daily-plan > .small {
   margin-top: 8px;
 }
-.daily-plan-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 18px;
-}
-.daily-plan-meal {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
+.daily-plan-grid,
+.empty-meals {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.empty-meals li,
+.daily-plan-meal {
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding: 12px 0;
+  display: grid;
+  grid-template-columns: 4.5em minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  background: transparent;
 }
-.meal-symbol {
-  font-size: 32px;
-}
-.meal-copy {
-  flex: 1;
-  min-width: 120px;
-}
-.meal-copy h3 {
-  font-size: 13px;
-}
-.daily-plan-meal > a {
-  font-size: 11px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-.plan-start {
-  padding-top: 16px;
+.empty-meals li {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  align-items: baseline;
 }
-.plan-start p {
-  font-size: 12px;
+.slot-name {
+  font-family: var(--sans);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1a241c;
 }
-@media (max-width: 1000px) {
-  .daily-plan-grid {
-    grid-template-columns: 1fr;
-  }
-  .daily-plan-meal {
-    flex-wrap: nowrap;
-  }
+.empty-meals li > span:last-child {
+  font-weight: 400;
+  color: var(--muted);
 }
-@media (max-width: 600px) {
-  .daily-plan-meal {
-    padding: 12px;
-    gap: 9px;
-    flex-wrap: wrap;
+.meal-symbol {
+  font-size: 18px;
+  margin-right: 4px;
+}
+.meal-copy h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+.meal-copy p {
+  margin-top: 2px;
+}
+.daily-plan-meal > a,
+.daily-plan-meal > span {
+  justify-self: end;
+}
+.plan-start {
+  display: block;
+}
+.plan-start .text-btn {
+  margin-top: 14px;
+}
+@media (max-width: 720px) {
+  .daily-plan-meal,
+  .empty-meals li {
+    grid-template-columns: 4.2em minmax(0, 1fr);
   }
-  .meal-copy {
-    min-width: 140px;
-  }
-  .daily-plan-meal > a {
-    margin-left: auto;
-  }
-  .daily-plan > .between h2 {
-    font-size: 16px;
+  .daily-plan-meal > a,
+  .daily-plan-meal > span:last-child {
+    grid-column: 2;
+    justify-self: start;
   }
 }
 </style>

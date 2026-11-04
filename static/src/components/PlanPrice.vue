@@ -59,9 +59,13 @@ function update(event: Event, side: "min" | "max") {
   color: var(--muted);
 }
 legend {
+  display: block;
+  width: 100%;
+  float: none;
   padding: 0;
   margin-bottom: 6px;
   font-size: inherit;
+  line-height: 1.4;
 }
 .range-box {
   display: grid;

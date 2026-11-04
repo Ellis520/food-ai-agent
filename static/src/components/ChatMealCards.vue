@@ -76,7 +76,7 @@ const emit = defineEmits<{
           :disabled="disabled"
           @click="emit('choose', meal)"
         >
-          选这个 <Icon name="ChevronRight" :size="14" />
+          选这个
         </button>
       </li>
     </ul>
@@ -88,8 +88,8 @@ const emit = defineEmits<{
 .meal-recommendations,
 .meal-choice {
   width: min(100%, 590px);
-  background: #f4f7ef;
-  border-color: #dce6d4;
+  background: var(--sheet);
+  border-color: var(--border);
   overflow-wrap: anywhere;
 }
 .meal-recommendations ul {
@@ -104,29 +104,33 @@ const emit = defineEmits<{
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  padding: 11px 12px;
-  background: #fffefb;
-  border: 1px solid var(--border);
-  border-radius: 9px;
+  padding: 14px 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
 }
 .meal-copy h4,
 .meal-choice-title h3 {
   margin: 2px 0 0;
-  font-size: 15px;
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 700;
   line-height: 1.45;
-  color: #294335;
+  color: #1a241c;
 }
 .meal-copy p,
 .meal-choice p {
   margin: 5px 0 0;
   line-height: 1.65;
-  font-size: 12px;
-  color: #546b53;
+  font-size: 14px;
+  color: #5c6b60;
 }
 .meal-kicker {
-  font-size: 11px;
-  color: #5a7555;
-  font-weight: 650;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--chop);
+  font-weight: 700;
 }
 .meal-pick,
 .meal-actions > * {
@@ -136,7 +140,7 @@ const emit = defineEmits<{
   gap: 5px;
   white-space: nowrap;
   min-height: 36px;
-  font-size: 12px;
+  font-size: 15px;
 }
 .meal-choice-title,
 .meal-actions {
@@ -150,8 +154,9 @@ const emit = defineEmits<{
   width: 38px;
   height: 38px;
   flex: none;
-  border-radius: 11px;
-  background: #e6eddd;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--border);
   color: #385742;
 }
 .meal-actions {

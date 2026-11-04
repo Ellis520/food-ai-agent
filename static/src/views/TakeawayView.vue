@@ -105,12 +105,12 @@ async function loadMore() {
 
 <template>
   <PageHeader
-    title="想吃什么，让食刻陪你挑。"
-    description="输入想吃的口味、菜名或店名，看看校园附近有哪些选择。"
+    title="外卖助手"
+    description="写下想吃的口味、菜名或店名。"
   />
   <section class="panel takeaway-conversation" aria-label="外卖推荐">
     <div class="takeaway-assistant">
-      <span class="brand-mark"><Icon name="Sparkles" /></span>
+      <span class="brand-mark"><Icon name="Sprout" /></span>
       <div>
         <strong>食刻外卖助手</strong>
         <p>

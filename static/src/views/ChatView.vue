@@ -34,6 +34,9 @@ const describingSymptoms = ref(false);
 const latestAssistant = computed(() =>
   app.messages.filter((message) => message.role === "assistant").at(-1),
 );
+const userInitial = computed(
+  () => Array.from(app.profile.name.trim() || "食")[0],
+);
 let failedLookup: ChatHealthOptions | undefined;
 function voiceStart() {
   voiceOriginal.value = input.value;
@@ -244,14 +247,13 @@ async function send(value = input.value, health?: ChatHealthOptions) {
 </script>
 <template>
   <PageHeader
-    title="吃什么，和食刻聊聊。"
-    description="三餐灵感、校园好味、营养小知识，都可以从一句话开始。"
-    eyebrow="YOUR LITTLE FOOD COMPANION"
+    title="AI 聊天"
+    description="问下一餐吃什么，或让它找附近的店。"
   />
   <section class="chat-layout">
     <div class="chat-main panel">
       <div class="chat-heading">
-        <span class="brand-mark"><Icon name="Sparkles" /></span>
+        <span class="brand-mark"><Icon name="Sprout" /></span>
         <div>
           <strong>食刻小助手</strong>
           <p>
@@ -270,9 +272,8 @@ async function send(value = input.value, health?: ChatHealthOptions) {
       </div>
       <div ref="list" class="message-list" aria-live="polite">
         <div class="welcome-message">
-          <span>✳</span>
-          <h2>您好，今天想吃点什么？</h2>
-          <p>您可以告诉我想吃什么，我们一起把这一餐安排好。</p>
+          <h2>今天吃什么</h2>
+          <p>可以问一餐怎么吃，或找校园附近的店。</p>
           <div class="prompt-grid">
             <button
               v-for="q in [
@@ -284,7 +285,7 @@ async function send(value = input.value, health?: ChatHealthOptions) {
               :disabled="busy || voiceBusy"
               @click="send(q)"
             >
-              {{ q }} ↗
+              {{ q }}
             </button>
           </div>
         </div>
@@ -297,10 +298,24 @@ async function send(value = input.value, health?: ChatHealthOptions) {
             { 'health-message': message.kind === 'health' },
           ]"
         >
-          <span class="message-label">{{
-            message.role === "user" ? "我" : "食刻AI"
-          }}</span
-          ><ChatHealthAssessment
+          <span
+            v-if="message.role === 'user'"
+            class="avatar message-avatar"
+            aria-hidden="true"
+            ><img
+              v-if="app.profile.avatar"
+              :src="app.profile.avatar"
+              alt=""
+            /><template v-else>{{ userInitial }}</template></span
+          >
+          <span v-else class="brand-mark message-bot-avatar" aria-hidden="true"
+            ><Icon name="Sprout" :size="16"
+          /></span>
+          <div class="message-main">
+            <span v-if="message.role === 'assistant'" class="message-label"
+              >食刻小助手</span
+            >
+            <ChatHealthAssessment
             v-if="
               message.role === 'assistant' &&
               message.kind === 'health' &&
@@ -337,7 +352,7 @@ async function send(value = input.value, health?: ChatHealthOptions) {
               v-if="message.planItems"
               :to="{ path: '/plan', query: { fromChat: message.id } }"
               class="text-btn meal-plan-link"
-              >查看三餐计划 →</RouterLink
+              >查看三餐计划</RouterLink
             ></ChatMealCards
           ><ChatRestaurantCards
             v-else-if="message.restaurantSearch?.places.length"
@@ -412,8 +427,9 @@ async function send(value = input.value, health?: ChatHealthOptions) {
                       }
               "
               class="text-btn"
-              >去看看 →</RouterLink
+              >去看看</RouterLink
             >
+          </div>
           </div>
         </article>
         <p v-if="busy" class="notice">正在等待回复…</p>
@@ -469,18 +485,12 @@ async function send(value = input.value, health?: ChatHealthOptions) {
       </p>
     </div>
     <aside class="chat-aside panel">
-      <span class="eyebrow">WHAT'S ON YOUR MIND?</span>
-      <h2>灵感，不止一餐。</h2>
+      <h2>也可以去</h2>
       <RouterLink
         v-for="item in [
-          ['/plan', 'CalendarDays', '规划三餐', '照顾预算与口味'],
-          ['/map', 'MapPinned', '发现校园美食', '给日常加一点新鲜'],
-          [
-            '/language',
-            'ShieldCheck',
-            '饮食小贴士',
-            '食品安全，有疑问先问清楚',
-          ],
+          ['/plan', 'CalendarDays', '规划三餐', '排出早餐、午餐和晚餐'],
+          ['/map', 'MapPinned', '校园地图', '找附近的店'],
+          ['/language', 'ShieldCheck', '饮食小贴士', '问安全和药店'],
         ]"
         :key="item[0]"
         :to="item[0]"
@@ -488,8 +498,7 @@ async function send(value = input.value, health?: ChatHealthOptions) {
         ><Icon :name="item[1]" /><span
           ><strong>{{ item[2] }}</strong
           ><small>{{ item[3] }}</small></span
-        ><Icon name="ChevronRight" :size="16"
-      /></RouterLink>
+        ></RouterLink>
       <div class="sage notice">
         🌱 小提示：生成的建议需要你确认。任何饮食禁忌，请务必向商家再次核实。
       </div>
@@ -501,7 +510,7 @@ async function send(value = input.value, health?: ChatHealthOptions) {
 .health-message {
   max-width: min(100%, 740px);
 }
-.message > .assistant-copy {
+.message-main > .assistant-copy {
   font-size: 14px;
   line-height: 1.8;
   color: #354f3f;

@@ -58,7 +58,6 @@ const values = computed(() => {
 
 <style scoped>
 .category-nutrition {
-  grid-column: 2/-1;
   min-width: 0;
   background: #f1f4ea;
   border: 1px solid var(--border);

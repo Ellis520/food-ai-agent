@@ -220,12 +220,11 @@ async function save() {
 </script>
 <template>
   <PageHeader
-    title="把三餐，安排成喜欢的样子。"
-    description="从预算和口味开始，为校园生活留一点从容。"
+    title="饮食规划"
+    description="按预算和口味，给一天留下早餐、午餐和晚餐。"
   />
   <section class="panel plan-settings" aria-labelledby="plan-settings-title">
     <header>
-      <span class="eyebrow">MEAL PREFERENCES</span>
       <h2 id="plan-settings-title">三餐安排</h2>
     </header>
     <div class="plan-filters">
@@ -271,7 +270,7 @@ async function save() {
         :disabled="busy || budget < 20 || budget > 200 || conflicts.length > 0"
         @click="generate"
       >
-        <Icon name="Sparkles" :size="18" />{{
+        {{
           busy ? "正在生成…" : isDemo ? "生成示例计划" : "AI 生成饮食计划"
         }}</button
       ><button
@@ -314,13 +313,10 @@ async function save() {
   </div>
   <p v-if="error" class="notice error" role="alert">{{ error }}</p>
   <div v-if="!items.length" class="empty-state panel plan-welcome">
-    <h2>美好的一天从饮食规划开始</h2>
+    <h2>这天还没有三餐</h2>
   </div>
   <section v-else class="plan-grid">
     <article v-for="(item, i) in items" :key="i" class="panel plan-card">
-      <span class="eyebrow">{{
-        ["GOOD MORNING", "MIDDAY BREAK", "SLOW EVENING"][i]
-      }}</span>
       <h2>{{ item.slot }}</h2>
       <span class="plan-emoji">{{
         foods.find((f) => f.id === item.foodId)?.emoji || "🍽️"
@@ -486,11 +482,10 @@ async function save() {
   }
 }
 .plan-fields {
-  grid-column: 2/-1;
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.65fr) minmax(0, 1fr);
-  gap: 12px;
-  align-items: start;
+  grid-template-columns: minmax(180px, 1.5fr) minmax(108px, 0.6fr) minmax(220px, 1fr);
+  gap: 12px 16px;
+  align-items: end;
   min-width: 0;
 }
 .plan-fields label {
@@ -561,10 +556,9 @@ async function save() {
 .dish-options button:first-child {
   font-weight: 700;
 }
-@media (max-width: 720px) {
+@media (max-width: 860px) {
   .plan-fields {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-column: 1/-1;
+    grid-template-columns: 1fr;
   }
   .dish-field {
     grid-column: 1/-1;

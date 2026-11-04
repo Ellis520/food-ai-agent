@@ -179,18 +179,22 @@ const rows = computed(() =>
   margin-bottom: 16px;
 }
 .nutrition-total-line strong {
-  color: #3f6b50;
-  font-size: 15px;
+  font-family: var(--sans);
+  color: #1a241c;
+  font-size: 18px;
+  font-weight: 700;
 }
 .nutrition-total-line span {
-  font-size: 10px;
-  color: #7b8972;
+  font-size: 14px;
+  color: var(--muted);
 }
 .nutrient {
   padding: 20px 17px;
 }
 .nutrient strong {
-  font-size: 30px;
+  font-family: var(--sans);
+  font-size: 32px;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 .nutrient strong small {
@@ -198,7 +202,7 @@ const rows = computed(() =>
 }
 .nutrient > span {
   display: block;
-  font-size: 10px;
+  font-size: 14px;
   line-height: 1.7;
 }
 @media (max-width: 600px) {
@@ -221,21 +225,21 @@ const rows = computed(() =>
   margin-bottom: 16px;
 }
 .breakdown-header h2 {
-  font-size: 15px;
+  font-size: 22px;
 }
 .breakdown-header p {
-  font-size: 10px;
+  font-size: 14px;
   margin-top: 7px;
 }
 .breakdown-header label {
-  font-size: 10px;
-  color: #829475;
+  font-size: 14px;
+  color: #5c6b60;
 }
 .breakdown-header select {
-  font-size: 11px;
+  font-size: 15px;
   margin-top: 5px;
-  padding: 7px;
-  min-width: 100px;
+  padding: 8px 10px;
+  min-width: 140px;
 }
 .contribution-row {
   display: grid;
@@ -245,23 +249,28 @@ const rows = computed(() =>
   border-bottom: 1px solid var(--border);
 }
 .contribution-row strong {
-  font-size: 12px;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 .contribution-row div > span {
   display: block;
-  font-size: 9px;
-  color: #8a967f;
+  font-size: 14px;
+  color: var(--muted);
   margin-top: 4px;
 }
 .contribution-row p {
-  font-size: 12px;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
   text-align: right;
-  color: #446e4f;
+  color: #1a241c;
 }
 .contribution-row small {
   display: block;
-  font-size: 9px;
+  font-size: 13px;
+  font-weight: 400;
   margin-top: 5px;
 }
 .contribution-track {
@@ -279,8 +288,8 @@ const rows = computed(() =>
 }
 .calculation-details {
   margin-top: 18px;
-  font-size: 10px;
-  color: #6c815c;
+  font-size: 14px;
+  color: #5c6b60;
 }
 .calculation-details summary {
   cursor: pointer;
@@ -292,7 +301,7 @@ const rows = computed(() =>
 .calculation-table table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 10px;
+  font-size: 14px;
   table-layout: fixed;
 }
 .calculation-table th,
@@ -306,7 +315,7 @@ const rows = computed(() =>
   width: 35%;
 }
 .calculation-details > p {
-  font-size: 9px;
+  font-size: 14px;
   margin-top: 12px;
   line-height: 1.8;
 }

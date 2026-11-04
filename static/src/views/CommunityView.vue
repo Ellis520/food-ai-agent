@@ -103,7 +103,6 @@ onMounted(() => void load());
 <template>
   <div class="community-page">
     <PageHeader
-      eyebrow="CAMPUS FOOD CLUB"
       title="美食圈"
       description="晒晒今天吃了什么，查查同学怎么说，约个饭搭子一起吃。"
     >
@@ -332,12 +331,19 @@ onMounted(() => void load());
 .community-tabs button {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #5c6b60;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 8px 12px;
 }
 .community-tabs [aria-pressed="true"] {
-  background: #285d48;
-  color: white;
-  border-color: #285d48;
+  background: var(--sheet);
+  color: #1a241c;
+  border-color: var(--border);
 }
 .community-feedback {
   font-size: 13px;
@@ -372,12 +378,13 @@ onMounted(() => void load());
   color: #657967;
 }
 .post-tag {
-  border-radius: 20px;
-  padding: 5px 10px;
-  font-size: 12px;
-  font-weight: 650;
-  background: #edf1e7;
-  color: #435f42;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: #1a241c;
 }
 .post-tag.recommend {
   background: #e5f1dc;

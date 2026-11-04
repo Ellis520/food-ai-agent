@@ -37,14 +37,9 @@ watch(
     <div v-if="menu" class="menu-overlay" @click="menu = false"></div>
     <aside class="sidebar" :class="{ open: menu }">
       <RouterLink to="/" class="brand"
-        ><span class="brand-mark"><Icon name="Sprout" :size="29" /></span
-        ><span
-          >食刻<span class="brand-ai">AI</span><small>FOODMOMENT</small></span
-        ></RouterLink
+        ><span class="brand-mark"><Icon name="Sprout" :size="22" /></span
+        ><span>食刻<small>校园食单</small></span></RouterLink
       >
-      <div class="campus-label">
-        <Icon name="GraduationCap" :size="16" /> 校园里的饮食好搭子
-      </div>
       <nav aria-label="主导航">
         <template v-for="group in ['日常食刻', '探索更多', '我的']" :key="group"
           ><span class="nav-group">{{ group }}</span
@@ -65,10 +60,6 @@ watch(
           ></template
         >
       </nav>
-      <div class="sidebar-note">
-        <span>🌱</span><strong>好好吃饭，也是一种超能力。</strong>
-        <p>把每一天，过成喜欢的样子。</p>
-      </div>
       <RouterLink to="/profile" class="sidebar-profile"
         ><span class="avatar"
           ><img
@@ -78,7 +69,7 @@ watch(
           /><template v-else>食</template></span
         ><span
           ><strong>{{ app.profile.name }}</strong
-          ><small>今天也要元气满满</small></span
+          ><small>个人中心</small></span
         ><Icon name="ChevronRight" :size="16"
       /></RouterLink>
     </aside>
@@ -120,7 +111,7 @@ watch(
               : "后端模式：记录保存到 SQLite；AI、地图与语音按配置连接，未配置时明确提示。"
           }}</span
           ><RouterLink to="/profile"
-            >服务配置 <span aria-hidden="true">↗</span></RouterLink
+            >服务配置</RouterLink>
           >
         </div>
         <div v-if="app.storageError" role="alert" class="notice error">
@@ -142,11 +133,7 @@ watch(
         </div>
         <RouterView v-else />
       </main>
-      <footer>
-        食刻AI · 让每一餐，都有好好生活的滋味。<span
-          >校园饮食探索计划 / 2026</span
-        >
-      </footer>
+      <footer>食刻 · 校园饮食</footer>
     </div></template
   ><Transition name="toast"
     ><div v-if="app.toast" role="status" class="toast">

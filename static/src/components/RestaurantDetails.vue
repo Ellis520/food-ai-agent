@@ -252,10 +252,10 @@ onMounted(() => {
   margin: auto;
   padding: 0;
   border: 1px solid var(--border);
-  border-radius: 20px;
-  background: #fffefa;
-  color: var(--ink, #253c2f);
-  box-shadow: 0 18px 60px #163b2938;
+  border-radius: 8px;
+  background: var(--sheet);
+  color: var(--ink, #243027);
+  box-shadow: none;
   overscroll-behavior: contain;
 }
 .store-details::backdrop {
@@ -289,9 +289,11 @@ onMounted(() => {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin: 0;
-  padding: 12px;
-  border-radius: 10px;
-  background: #edf2e9;
+  padding: 12px 0;
+  border-radius: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: transparent;
 }
 dt {
   color: #506651;
@@ -303,7 +305,10 @@ dd {
   color: #233d30;
 }
 .store-metrics dd {
+  font-family: var(--sans);
+  font-size: 18px;
   font-weight: 700;
+  color: #1a241c;
 }
 .store-facts {
   display: grid;
@@ -343,10 +348,11 @@ dd {
   font-size: 13px;
 }
 .store-review {
-  padding: 14px;
-  margin: 12px 0;
-  border-radius: 10px;
-  background: #f4f6ef;
+  padding: 14px 0;
+  margin: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
 }
 .store-review header {
   display: flex;

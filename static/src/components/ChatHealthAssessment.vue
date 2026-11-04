@@ -67,10 +67,10 @@ const sections = computed(() => {
 }
 .assessment-label {
   display: block;
-  font-size: 11px;
-  font-weight: 650;
-  color: #466753;
-  letter-spacing: 0.08em;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--chop);
+  letter-spacing: 0;
 }
 .assessment-heading h3 {
   margin: 0;

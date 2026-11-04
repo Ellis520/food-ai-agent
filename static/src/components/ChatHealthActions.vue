@@ -102,7 +102,7 @@ async function lookup(kind: HealthLookup) {
         href="https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202607/t20260713_4759730.html"
         target="_blank"
         rel="noopener noreferrer"
-        >国家卫健委 120 急救指南 ↗</a
+        >国家卫健委 120 急救指南</a
       >
     </p>
   </section>
@@ -166,21 +166,21 @@ async function lookup(kind: HealthLookup) {
         :href="reference.url"
         target="_blank"
         rel="noopener noreferrer"
-        >{{ reference.label }} ↗</a
+        >{{ reference.label }}</a
       >
       <a
         v-if="status === 'otc'"
         href="https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jksh/202212/t20221230_2887410.html"
         target="_blank"
         rel="noopener noreferrer"
-        >北京市卫健委 · 解热镇痛用药科普 ↗</a
+        >北京市卫健委 · 解热镇痛用药科普</a
       >
       <a
         v-if="status === 'hydration'"
         href="https://wjw.fujian.gov.cn/xxgk/gzdt/mtbd/202503/t20250328_6788512.htm"
         target="_blank"
         rel="noopener noreferrer"
-        >国家疾控局 · 腹泻与补液健康提示 ↗</a
+        >国家疾控局 · 腹泻与补液健康提示</a
       >
     </div>
   </section>

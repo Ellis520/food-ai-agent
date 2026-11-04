@@ -200,9 +200,8 @@ function answerParagraphs(text: string) {
 
 <template>
   <PageHeader
-    eyebrow="A LITTLE CARE, EVERY DAY"
-    title="饮食小贴士，安心每一餐。"
-    description="您可以打字或说话，咨询饮食安全、身体不适，或查找附近的医院和药店。"
+    title="饮食小贴士"
+    description="可以问饮食安全、身体不舒服，或找医院和药店。"
   />
   <div class="safety-layout">
     <section class="safety-library" aria-label="饮食安全提示">
@@ -243,13 +242,13 @@ function answerParagraphs(text: string) {
             :href="source.url"
             target="_blank"
             rel="noopener noreferrer"
-            >查看权威资料 ↗</a
+            >查看权威资料</a
           ><button
             class="text-btn"
             :disabled="busy || voiceBusy"
             @click="choose(tip.question)"
           >
-            问一问 <Icon name="ArrowUpRight" :size="16" />
+            问一问
           </button>
         </div>
       </article>
@@ -263,8 +262,7 @@ function answerParagraphs(text: string) {
     <section class="safety-chat panel" aria-label="饮食安全问答">
       <div class="between">
         <div>
-          <span class="eyebrow">ASK FOODMOMENT</span>
-          <h2>有疑问，先问清楚。</h2>
+          <h2>提问</h2>
         </div>
         <span class="safety-chat-icon"
           ><Icon name="MessageCircleHeart" :size="26"
@@ -406,7 +404,7 @@ function answerParagraphs(text: string) {
                 :href="source.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                >{{ source.title }} ↗</a
+                >{{ source.title }}</a
               >
             </div>
             <p class="source-note">
@@ -696,8 +694,9 @@ function answerParagraphs(text: string) {
 }
 
 .safety-question {
-  background: #edf2e7;
-  border-radius: 16px 16px 4px 16px;
+  background: var(--green);
+  color: #f7faf4;
+  border-radius: 6px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   line-height: 1.7;
@@ -705,13 +704,13 @@ function answerParagraphs(text: string) {
   max-width: min(100%, 420px);
   margin: 0 0 12px auto;
   padding: 9px 14px;
-  color: #234638;
+  color: #f7faf4;
   font-size: 15px;
 }
 .safety-answer {
   padding: clamp(15px, 2vw, 24px);
   border: 1px solid #cbdcd0;
-  border-radius: 16px;
+  border-radius: 8px;
   font-size: 14px;
   line-height: 1.8;
   border-left: 4px solid #3e7659;
@@ -747,8 +746,8 @@ function answerParagraphs(text: string) {
 .safety-answer-eyebrow {
   display: block;
   color: #506b59;
-  font-size: 11px;
-  font-weight: 650;
+  font-size: 14px;
+  font-weight: 700;
 }
 .safety-answer-header h3 {
   font-size: clamp(18px, 2vw, 22px);

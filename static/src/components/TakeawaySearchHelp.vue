@@ -51,10 +51,10 @@ async function copy(kind: "name" | "url") {
           href="https://waimai.meituan.com/mobile/download"
           target="_blank"
           rel="noopener noreferrer"
-          >美团外卖 App 官方下载 ↗</a
+          >美团外卖 App 官方下载</a
         >
         <a :href="loginUrl" target="_blank" rel="noopener noreferrer"
-          >网页需要登录时 ↗</a
+          >网页需要登录时</a
         >
         <button type="button" class="text-btn" @click="copy('url')">
           复制网页结果链接

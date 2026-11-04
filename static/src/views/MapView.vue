@@ -103,44 +103,49 @@ const mapUrl = computed(() =>
 </script>
 <template>
   <PageHeader
-    title="校园好味，就在转角。"
-    description="收藏那些值得绕一点路的小店，让每一天都有新的期待。"
+    title="校园美食地图"
+    description="按店名或菜名找附近的店。"
   />
   <form class="panel filter-panel" @submit.prevent="load()">
-    <label class="search-label"
-      ><Icon name="Search" :size="18" /><input
-        v-model="query"
-        maxlength="60"
-        placeholder="搜索店名或菜名，如麦当劳"
-        aria-label="搜索商家" /></label
-    ><button class="primary compact" type="submit">搜索</button
-    ><select
-      v-if="!isDemo"
-      v-model.number="radius"
-      aria-label="校园周边搜索半径"
-    >
-      <option :value="2000">校园 2 公里</option>
-      <option :value="5000">校园 5 公里</option>
-      <option :value="10000">校园 10 公里</option>
-    </select>
-    <div class="chips">
-      <button
-        v-for="c in isDemo
-          ? ['全部', '轻食', '热食', '均衡']
-          : ['全部', '餐饮']"
-        :key="c"
-        type="button"
-        :class="{ active: category === c }"
-        @click="category = c"
-      >
-        {{ c }}
-      </button>
+    <div class="filter-row">
+      <label class="search-label"
+        ><Icon name="Search" :size="18" /><input
+          v-model="query"
+          maxlength="60"
+          placeholder="搜索店名或菜名，如麦当劳"
+          aria-label="搜索商家"
+      /></label>
+      <button class="primary compact" type="submit">搜索</button>
     </div>
-    <select v-model="sort" aria-label="商家排序">
-      <option value="rating">评分优先</option>
-      <option value="distance">距离优先</option>
-      <option value="price">价格优先</option>
-    </select>
+    <div class="filter-row">
+      <select
+        v-if="!isDemo"
+        v-model.number="radius"
+        aria-label="校园周边搜索半径"
+      >
+        <option :value="2000">校园 2 公里</option>
+        <option :value="5000">校园 5 公里</option>
+        <option :value="10000">校园 10 公里</option>
+      </select>
+      <div class="chips">
+        <button
+          v-for="c in isDemo
+            ? ['全部', '轻食', '热食', '均衡']
+            : ['全部', '餐饮']"
+          :key="c"
+          type="button"
+          :class="{ active: category === c }"
+          @click="category = c"
+        >
+          {{ c }}
+        </button>
+      </div>
+      <select v-model="sort" aria-label="商家排序">
+        <option value="rating">评分优先</option>
+        <option value="distance">距离优先</option>
+        <option value="price">价格优先</option>
+      </select>
+    </div>
   </form>
   <p v-if="error" role="alert" class="notice error">
     {{ error }} <button class="text-btn" @click="load(page > 0)">重试</button>
@@ -198,7 +203,6 @@ const mapUrl = computed(() =>
       />
     </div>
     <div v-if="filtered.length || hasMore" class="map-results-footer">
-      <p class="map-results-tagline">总能找到你喜欢的</p>
       <p class="source-note">
         已显示 {{ filtered.length }} 家{{ isDemo ? "演示商家" : "高德商家"
         }}<span v-if="hasMore && sort === 'rating'">
@@ -254,7 +258,7 @@ const mapUrl = computed(() =>
           target="_blank"
           rel="noopener noreferrer"
           class="primary"
-          >去导航 ↗</a
+          >去导航</a
         ></template
       ><button class="secondary" @click="navigation = false">知道了</button>
     </section>

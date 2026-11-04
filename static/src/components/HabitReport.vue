@@ -83,7 +83,7 @@ function download() {
         :key="index"
         class="observation"
       >
-        <span class="eyebrow">OBSERVATION {{ index + 1 }}</span>
+        <span class="eyebrow">第 {{ index + 1 }} 条</span>
         <h3>{{ item.title }}</h3>
         <p>{{ item.detail }}</p>
         <div class="evidence">
@@ -138,23 +138,24 @@ function download() {
   gap: 14px;
 }
 .observation {
-  padding: 19px;
-  background: #f5f7ee;
-  border-radius: 12px;
+  padding: 16px 0;
+  background: transparent;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border);
   min-width: 0;
 }
 .observation > p {
-  font-size: 12px;
+  font-size: 15px;
   margin: 10px 0;
-  line-height: 1.9;
+  line-height: 1.7;
   overflow-wrap: anywhere;
 }
 .evidence {
   display: flex;
   align-items: flex-start;
   gap: 7px;
-  font-size: 10px;
-  color: #6d815e;
+  font-size: 14px;
+  color: #5c6b60;
   padding-top: 12px;
   border-top: 1px solid #e1e8d6;
 }
@@ -171,10 +172,12 @@ function download() {
   margin-bottom: 22px;
 }
 .next-actions strong {
-  font-size: 13px;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
 }
 .next-actions p {
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 4px;
   overflow-wrap: anywhere;
 }

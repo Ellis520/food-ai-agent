@@ -147,7 +147,7 @@ const region = computed(() => {
       v-if="!hospital && !pharmacy && !mode"
       :to="{ path: '/map', query: search.keyword ? { q: search.keyword } : {} }"
       class="text-btn more-restaurants"
-      >在校园美食地图查看更多 ↗</RouterLink
+      >在校园美食地图查看更多</RouterLink
     >
   </section>
 </template>
@@ -161,16 +161,19 @@ const region = computed(() => {
   color: #315642;
 }
 .chat-place {
-  border: 1px solid #dde6d7;
-  background: #fff;
-  border-radius: 11px;
-  padding: 13px;
+  border: 1px solid var(--border);
+  background: var(--sheet);
+  border-radius: 8px;
+  padding: 16px;
   margin-top: 10px;
   overflow-wrap: anywhere;
 }
 .chat-place h4 {
   margin: 0 0 6px;
-  font-size: 15px;
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a241c;
 }
 .chat-place p {
   margin: 5px 0;
@@ -181,7 +184,7 @@ const region = computed(() => {
   gap: 4px 12px;
   flex-wrap: wrap;
   color: #546c53;
-  font-size: 11px;
+  font-size: 14px;
 }
 .restaurant-actions {
   display: flex;
@@ -194,7 +197,7 @@ const region = computed(() => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 15px;
 }
 .restaurant-link {
   margin: 10px 0 4px;

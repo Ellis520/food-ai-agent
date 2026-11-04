@@ -26,7 +26,7 @@ import PageHeader from "../components/PageHeader.vue";
 import NutritionSummary from "../components/NutritionSummary.vue";
 import Icon from "../components/Icon.vue";
 const app = useApp(),
-  tab = ref("搭配计算"),
+  tab = ref("记录汇总"),
   source = ref("示例目录"),
   foodId = ref("chicken"),
   sampleGrams = ref(300);
@@ -366,13 +366,13 @@ function exportReport() {
 </script>
 <template>
   <PageHeader
-    title="每一口，都可以更了解。"
-    description="把一餐放在一起算，也能按包装上的营养表，记录自己的搭配。"
+    title="营养分析"
+    description="按这一餐计算，或对照包装上的营养表。"
   />
   <div class="nutrition-toolbar">
     <div class="nutrition-tabs" aria-label="营养分析模式">
       <button
-        v-for="name in ['搭配计算', '记录汇总']"
+        v-for="name in ['记录汇总', '搭配计算']"
         :key="name"
         :class="{ active: tab === name }"
         :aria-pressed="tab === name"
@@ -388,7 +388,7 @@ function exportReport() {
       "
       @click="exportReport"
     >
-      导出计算清单 ↗
+      导出计算清单
     </button>
   </div>
   <p
@@ -631,7 +631,7 @@ function exportReport() {
     </p>
     <div v-if="!records.length" class="empty-state">
       <p>这一天的所选餐次还没有记录。</p>
-      <RouterLink to="/records" class="text-btn">去记录这一餐 →</RouterLink>
+      <RouterLink to="/records" class="text-btn">去记录这一餐</RouterLink>
     </div>
     <template v-else
       ><div class="nutrition-record-list">
@@ -677,37 +677,36 @@ function exportReport() {
 }
 .nutrition-tabs button,
 .nutrition-source-tabs button {
-  border: 0;
-  border-radius: 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
   background: transparent;
-  color: #809171;
-  padding: 9px 15px;
-  font-size: 12px;
+  color: #5c6b60;
+  padding: 8px 12px;
+  font-size: 15px;
+  font-weight: 700;
 }
 .nutrition-tabs {
-  padding: 5px;
-  background: #edf1e6;
-  border-radius: 11px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
 }
-.nutrition-tabs button.active {
-  background: #fffefb;
-  color: #3f6b50;
-  box-shadow: 0 2px 8px #455f4220;
+.nutrition-tabs button.active,
+.nutrition-source-tabs button.active {
+  background: var(--sheet);
+  color: #1a241c;
+  border-color: var(--border);
+  box-shadow: none;
 }
 .nutrition-source-tabs {
   margin: 18px 0;
 }
 .nutrition-source-tabs button {
-  font-size: 11px;
+  font-size: 15px;
   padding: 8px 12px;
-  background: #f2f5eb;
-}
-.nutrition-source-tabs button.active {
-  background: #3f6b50;
-  color: white;
+  background: transparent;
 }
 .nutrition-toolbar > .secondary {
-  font-size: 11px;
+  font-size: 15px;
 }
 .nutrition-workspace {
   display: grid;
@@ -722,7 +721,7 @@ function exportReport() {
 .nutrition-add-panel h2,
 .nutrition-recipe-editor h2,
 .nutrition-saved h2 {
-  font-size: 16px;
+  font-size: 22px;
 }
 .nutrition-label-fields {
   display: grid;
@@ -730,7 +729,7 @@ function exportReport() {
   gap: 12px;
 }
 .nutrition-label-fields label {
-  font-size: 10px;
+  font-size: 14px;
 }
 .nutrition-calculation {
   min-width: 0;
@@ -762,7 +761,7 @@ function exportReport() {
   margin-top: 20px;
 }
 .nutrition-entry h3 {
-  font-size: 14px;
+  font-size: 16px;
   overflow-wrap: anywhere;
   margin-bottom: 7px;
 }
@@ -777,12 +776,12 @@ function exportReport() {
   font-size: 10px;
 }
 .nutrition-entry label {
-  font-size: 9px;
+  font-size: 13px;
 }
 .nutrition-entry input {
   padding: 8px 10px;
   margin-top: 5px;
-  font-size: 12px;
+  font-size: 15px;
 }
 .nutrition-save-row {
   display: flex;
@@ -818,7 +817,9 @@ function exportReport() {
   min-width: 0;
 }
 .saved-nutrition strong {
-  font-size: 13px;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 .saved-nutrition p,
@@ -840,8 +841,8 @@ function exportReport() {
   margin-bottom: 15px;
 }
 .nutrition-record-filters label {
-  font-size: 11px;
-  color: #7c8e6f;
+  font-size: 14px;
+  color: #5c6b60;
 }
 .nutrition-record-filters input,
 .nutrition-record-filters select {
@@ -856,7 +857,7 @@ function exportReport() {
   flex-wrap: wrap;
   padding: 13px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 11px;
+  font-size: 14px;
   align-items: center;
 }
 .nutrition-record-list strong {

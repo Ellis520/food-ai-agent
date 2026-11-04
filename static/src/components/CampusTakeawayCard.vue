@@ -49,18 +49,20 @@ defineProps<{ place: Restaurant; links: CampusTakeawayEntry[] }>();
   min-width: 0;
   padding: clamp(16px, 2vw, 22px);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  background: #fffefb;
+  border-radius: 8px;
+  background: var(--sheet);
   overflow-wrap: anywhere;
 }
 .tag {
   align-self: flex-start;
 }
 h3 {
-  font-size: clamp(18px, 2vw, 21px);
+  font-family: var(--sans);
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 700;
   line-height: 1.4;
   margin: 11px 0 5px;
-  color: #253e30;
+  color: #1a241c;
 }
 .address {
   font-size: 13px;
@@ -71,18 +73,21 @@ h3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
   margin: 15px 0;
-  padding: 11px 9px;
-  border-radius: 9px;
-  background: #f0f3ea;
+  padding: 12px 0;
+  border-radius: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: transparent;
 }
 dt {
-  font-size: 11px;
-  color: #586c5b;
+  font-size: 13px;
+  color: #5c6b60;
 }
 dd {
-  font-size: 13px;
+  font-family: var(--sans);
+  font-size: 18px;
   font-weight: 700;
   margin: 0;
-  color: #263f32;
+  color: #1a241c;
 }
 </style>

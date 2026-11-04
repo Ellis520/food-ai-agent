@@ -6,17 +6,32 @@ import { isDemo } from "../api";
 import { foods } from "../api/mock";
 import { categoryReference, recordNutrition } from "../api/nutrition";
 import type { Meal } from "../api/types";
+import mealOptions from "../../../shared/meal-options.json";
 import PageHeader from "../components/PageHeader.vue";
 import Icon from "../components/Icon.vue";
 const app = useApp(),
   route = useRoute(),
   router = useRouter();
+const dishesBySlot = mealOptions as Record<string, string[]>;
+function dishesForSlot(slotName: string) {
+  const lists =
+    slotName === "加餐"
+      ? ["早餐", "午餐", "晚餐"].map((name) => dishesBySlot[name] ?? [])
+      : [dishesBySlot[slotName] ?? []];
+  const seen = new Set<string>();
+  return lists.flat().filter((name) => {
+    if (seen.has(name)) return false;
+    seen.add(name);
+    return true;
+  });
+}
 const date = ref(app.today),
   slot = ref("晚餐"),
-  foodId = ref("salad"),
   grams = ref(300),
-  cost = ref<number | "">(16),
-  dishName = ref("");
+  cost = ref<number | "">(0),
+  dishName = ref(""),
+  selectedDish = ref(dishesForSlot("晚餐")[0] ?? ""),
+  pinnedDish = ref("");
 const editingId = ref(""),
   planRef = ref<string>(),
   error = ref(""),
@@ -25,6 +40,37 @@ const form = ref<HTMLFormElement>();
 const records = computed(() =>
   app.meals.filter((meal) => meal.date === date.value),
 );
+const mealChoices = computed(() => {
+  const choices = dishesForSlot(slot.value);
+  const extra = pinnedDish.value.trim();
+  return extra && extra !== "不限" && !choices.includes(extra)
+    ? [extra, ...choices]
+    : choices;
+});
+function dishLabel(meal: { foodId: string; dishName?: string }) {
+  if (meal.dishName && meal.dishName !== "不限") return meal.dishName;
+  return foods.find((food) => food.id === meal.foodId)?.name ?? "";
+}
+function alignDish(name: string) {
+  const choices = dishesForSlot(slot.value);
+  pinnedDish.value = name && !choices.includes(name) ? name : "";
+  selectedDish.value = name || choices[0] || "";
+}
+function onSlotChange() {
+  const choices = dishesForSlot(slot.value);
+  if (pinnedDish.value && !choices.includes(pinnedDish.value))
+    pinnedDish.value = "";
+  if (
+    selectedDish.value &&
+    !choices.includes(selectedDish.value) &&
+    selectedDish.value !== pinnedDish.value
+  )
+    selectedDish.value = choices[0] ?? "";
+}
+function onDishChange() {
+  const food = foods.find((item) => item.name === selectedDish.value);
+  if (food) cost.value = food.price;
+}
 const duplicate = computed(
   () =>
     !!planRef.value &&
@@ -52,11 +98,13 @@ function loadRoute() {
     typeof route.query.date === "string" ? route.query.date : app.today;
   date.value = validDate(queryDate) ? queryDate : app.today;
   slot.value = "晚餐";
-  foodId.value = foods.some((food) => food.id === route.query.food)
-    ? String(route.query.food)
-    : "salad";
+  pinnedDish.value = "";
+  const queried = foods.find((food) => food.id === route.query.food);
+  selectedDish.value = queried?.name || dishesForSlot(slot.value)[0] || "";
+  if (queried && !dishesForSlot(slot.value).includes(queried.name))
+    pinnedDish.value = queried.name;
   grams.value = 300;
-  cost.value = foods.find((food) => food.id === foodId.value)?.price || 0;
+  cost.value = queried?.price ?? 0;
   if (route.query.planDate !== undefined) {
     const plannedDate = String(route.query.planDate),
       plannedSlot = String(route.query.slot);
@@ -70,9 +118,9 @@ function loadRoute() {
     }
     date.value = plannedDate;
     slot.value = meal.slot;
-    foodId.value = meal.foodId;
     grams.value = meal.grams;
     dishName.value = meal.dishName === "不限" ? "" : (meal.dishName ?? "");
+    alignDish(dishLabel(meal));
     cost.value = foods.find((food) => food.id === meal.foodId)?.price ?? "";
     planRef.value = `${plannedDate}:${meal.slot}`;
   }
@@ -82,10 +130,10 @@ function edit(meal: Meal) {
   editingId.value = meal.id;
   date.value = meal.date;
   slot.value = meal.slot;
-  foodId.value = meal.foodId;
   grams.value = meal.grams;
   cost.value = meal.cost;
   dishName.value = meal.dishName ?? "";
+  alignDish(dishLabel(meal));
   planRef.value = meal.planRef;
   planProblem.value = false;
   error.value = "";
@@ -105,11 +153,17 @@ function save() {
     error.value = "请选择今天或过去的实际用餐日期。";
     return;
   }
-  const name = dishName.value.trim();
+  const chosen = selectedDish.value;
+  const typed = dishName.value.trim();
+  const label = chosen || typed;
+  const catalog = chosen
+    ? foods.find((food) => food.name === chosen)
+    : undefined;
   if (
-    (foodId.value
-      ? !foods.some((food) => food.id === foodId.value)
-      : !name || name === "不限" || name.length > 60) ||
+    !label ||
+    label === "不限" ||
+    label.length > 60 ||
+    (chosen ? !mealChoices.value.includes(chosen) : false) ||
     !["早餐", "午餐", "晚餐", "加餐"].includes(slot.value) ||
     !Number.isFinite(grams.value) ||
     grams.value < 1 ||
@@ -137,10 +191,10 @@ function save() {
     id,
     date: date.value,
     slot: slot.value,
-    foodId: foodId.value,
+    foodId: catalog?.id ?? "",
     grams: grams.value,
     cost: cost.value,
-    ...(!foodId.value ? { dishName: name } : {}),
+    ...(!catalog ? { dishName: label } : {}),
     ...(reference ? { planRef: reference } : {}),
   };
   const index = app.meals.findIndex((item) => item.id === id);
@@ -185,8 +239,8 @@ function remove(id: string) {
 
 <template>
   <PageHeader
-    title="记录一餐，也记录生活。"
-    description="不用追求完美，从认真记下今天吃了什么开始。"
+    title="记录一餐"
+    description="写下菜名、份量和花费。确认后才计入今天。"
   />
   <section class="records-layout">
     <form ref="form" class="panel form-stack" @submit.prevent="save">
@@ -213,7 +267,7 @@ function remove(id: string) {
         >日期<input v-model="date" type="date" :max="app.today" required
       /></label>
       <label
-        >餐次<select v-model="slot" aria-label="餐次">
+        >餐次<select v-model="slot" aria-label="餐次" @change="onSlotChange">
           <option>早餐</option>
           <option>午餐</option>
           <option>晚餐</option>
@@ -222,17 +276,17 @@ function remove(id: string) {
       >
       <label
         >餐食<select
-          v-model="foodId"
+          v-model="selectedDish"
           aria-label="餐食"
-          @change="cost = foods.find((food) => food.id === foodId)?.price ?? ''"
+          @change="onDishChange"
         >
-          <option value="">自行填写菜名</option>
-          <option v-for="food in foods" :key="food.id" :value="food.id">
-            {{ food.name }}
+          <option v-for="name in mealChoices" :key="name" :value="name">
+            {{ name }}
           </option>
+          <option value="">自行填写菜名</option>
         </select></label
       >
-      <label v-if="!foodId"
+      <label v-if="!selectedDish"
         >实际菜名<input
           v-model.trim="dishName"
           maxlength="60"
@@ -283,7 +337,7 @@ function remove(id: string) {
     </form>
     <section class="panel">
       <div class="section-heading">
-        <h2>{{ date }} 的小满足</h2>
+        <h2>{{ date }} 的记录</h2>
         <span class="tag">{{ records.length }} 条记录</span>
       </div>
       <div v-if="!records.length" class="empty-state">

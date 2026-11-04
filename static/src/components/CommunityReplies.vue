@@ -180,7 +180,7 @@ onMounted(() => void load());
   flex-wrap: wrap;
 }
 .reply-meta time {
-  font-size: 11px;
+  font-size: 13px;
   color: #657967;
 }
 .post-replies label {

@@ -71,10 +71,7 @@ function download() {
 }
 </script>
 <template>
-  <PageHeader
-    title="每个人，都有自己的食刻。"
-    description="让偏好被记住，让日常更合心意。"
-  />
+  <PageHeader title="个人中心" />
   <div class="profile-layout">
     <form class="panel form-stack" @submit.prevent="save">
       <div class="between">
@@ -172,7 +169,7 @@ function download() {
             移除
           </button>
         </div>
-        <RouterLink to="/map" class="text-btn">发现校园好味 →</RouterLink>
+        <RouterLink to="/map" class="text-btn">去校园地图</RouterLink>
       </section>
       <section class="panel">
         <h2>{{ isDemo ? "本地数据管理" : "当前会话数据管理" }}</h2>

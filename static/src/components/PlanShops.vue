@@ -197,7 +197,7 @@ async function chooseOrder(shop: Restaurant) {
             :href="walkingUrl(shop)"
             target="_blank"
             rel="noopener noreferrer"
-            >去导航 ↗</a
+            >去导航</a
           >
           <button
             type="button"
