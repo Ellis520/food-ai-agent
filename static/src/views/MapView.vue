@@ -3,6 +3,7 @@ import { highestRatedFirst, walkingUrl } from "../api/restaurantActions";
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useRoute } from "vue-router";
 import { api, isDemo } from "../api";
+import { useApp } from "../stores/app";
 import type { Restaurant } from "../api/types";
 import RestaurantCard from "../components/RestaurantCard.vue";
 import RestaurantDetails from "../components/RestaurantDetails.vue";
@@ -11,6 +12,7 @@ import Icon from "../components/Icon.vue";
 import AmapView from "../components/AmapView.vue";
 
 const route = useRoute();
+const app = useApp();
 const all = ref<Restaurant[]>([]);
 const category = ref("全部");
 const query = ref(
@@ -64,6 +66,15 @@ async function load(append = false) {
     if (id === requestId) loading.value = false;
   }
 }
+watch(
+  () => app.profile.campus,
+  () => {
+    requestId++;
+    clearTimeout(timer);
+    reset();
+    void load();
+  },
+);
 watch([query, radius], () => {
   requestId++;
   clearTimeout(timer);
@@ -104,7 +115,7 @@ const mapUrl = computed(() =>
 <template>
   <PageHeader
     title="校园美食地图"
-    description="按店名或菜名找附近的店。"
+    :description="`按店名或菜名找${app.profile.campus}附近的店。`"
   />
   <form class="panel filter-panel" @submit.prevent="load()">
     <div class="filter-row">

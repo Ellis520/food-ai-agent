@@ -222,12 +222,17 @@ def test_chat_returns_real_poi_choices_and_preserves_them_in_history(client, mon
 
 def test_map_search_passes_keyword_radius_and_page_to_amap(client, monkeypatch):
     import httpx
+    from services.map_service import _GEOCODE_CACHE
 
+    _GEOCODE_CACHE.clear()
     monkeypatch.setenv('AMAP_WEB_SERVICE_KEY', 'test-key')
     monkeypatch.setenv('CAMPUS_LOCATION', '113.300,23.090')
 
     def amap(request):
+        if request.url.path.endswith('/geocode/geo'):
+            return httpx.Response(200, json={'status': '1', 'geocodes': [{'location': '113.300,23.090'}]})
         assert request.url.params['keywords'] == '麦当劳'
+        assert request.url.params['location'] == '113.300000,23.090000'
         assert request.url.params['radius'] == '5000'
         assert request.url.params['page'] == '2'
         assert request.url.params['types'] == '050000'
@@ -311,13 +316,17 @@ def test_headache_assessment_uses_previous_answers_and_prioritizes_urgent_signs(
 
 def test_health_search_uses_map_types_and_converted_location(client, monkeypatch):
     import httpx
+    from services.map_service import _GEOCODE_CACHE
 
+    _GEOCODE_CACHE.clear()
     monkeypatch.setenv('AMAP_WEB_SERVICE_KEY', 'test-key')
     monkeypatch.setenv('CAMPUS_LOCATION', '113.300,23.090')
     calls = []
 
     def highde(request):
         calls.append(request)
+        if request.url.path.endswith('/geocode/geo'):
+            return httpx.Response(200, json={'status': '1', 'geocodes': [{'location': '113.300,23.090'}]})
         if request.url.path.endswith('/convert'):
             assert request.url.params['coordsys'] == 'gps'
             assert request.url.params['locations'] == '113.302000,23.091000'
@@ -337,19 +346,59 @@ def test_health_search_uses_map_types_and_converted_location(client, monkeypatch
     hospital = client.post('/api/chat', json={'message': '帮我找附近的医院'}).json()['data']
     assert hospital['restaurantSearch']['category'] == 'hospital'
     assert [place['name'] for place in hospital['restaurantSearch']['places']] == ['测试综合医院']
-    assert calls[0].url.params['location'] == '113.300,23.090'
+    around = [call for call in calls if call.url.path.endswith('/around')]
+    assert around[0].url.params['location'] == '113.300000,23.090000'
     pharmacy = client.post('/api/chat', json={'message': '查附近药店', 'healthLookup': 'pharmacy',
                                              'healthGPS': {'lng': 113.302, 'lat': 23.091}}).json()['data']
     assert pharmacy['restaurantSearch']['category'] == 'pharmacy'
     assert pharmacy['restaurantSearch']['origin'] == 'location'
     assert [place['name'] for place in pharmacy['restaurantSearch']['places']] == ['测试药店']
-    assert calls[-1].url.params['location'] == '113.307,23.089'
+    around = [call for call in calls if call.url.path.endswith('/around')]
+    assert around[-1].url.params['location'] == '113.307000,23.089000'
     assert 'healthGPS' not in pharmacy
 
+def test_profile_campus_moves_the_nearby_search_center(client, monkeypatch):
+    import httpx
+    from services.map_service import _GEOCODE_CACHE
+
+    _GEOCODE_CACHE.clear()
+    monkeypatch.setenv('AMAP_WEB_SERVICE_KEY', 'test-key')
+    monkeypatch.setenv('CAMPUS_LOCATION', '113.298214,23.096746')
+    state = client.get('/api/state').json()['data']
+    state['state']['profile']['campus'] = '中山大学东校区'
+    assert client.put('/api/state', json=state).status_code == 200
+    seen = {}
+
+    def amap(request):
+        if request.url.path.endswith('/geocode/geo'):
+            assert request.url.params['address'] == '广州市番禺区大学城外环东路132号中山大学东校区'
+            assert request.url.params['city'] == '广州'
+            return httpx.Response(200, json={'status': '1', 'geocodes': [{'location': '113.390,23.060'}]})
+        seen['location'] = request.url.params['location']
+        return httpx.Response(200, json={'status': '1', 'pois': [
+            {'id': 'east-1', 'name': '大学城食堂', 'location': '113.391,23.061', 'distance': '120'},
+        ]})
+
+    original_client = httpx.AsyncClient
+    monkeypatch.setattr(main.httpx, 'AsyncClient', lambda **kwargs: original_client(
+        transport=httpx.MockTransport(amap), **kwargs
+    ))
+    response = client.get('/api/food/search', params={'keyword': '食堂', 'radius': 5000, 'page': 1})
+    assert response.status_code == 200
+    assert seen['location'] == '113.390000,23.060000'
+    assert response.json()['data']['restaurants'][0]['name'] == '大学城食堂'
+    state['state']['profile']['campus'] = '其他校园'
+    assert client.put('/api/state', json=state).status_code == 422
+
+
 def test_poi_unknown_metadata_remains_null(client,monkeypatch):
+    from services.map_service import _GEOCODE_CACHE
+
+    _GEOCODE_CACHE.clear()
     monkeypatch.setenv('AMAP_WEB_SERVICE_KEY','test-key');monkeypatch.setenv('CAMPUS_LOCATION','113.3,23.1')
     upstream=MagicMock();upstream.status_code=200;upstream.json.return_value={'status':'1','pois':[{'id':'test','name':'接口测试餐厅','location':'113.3,23.1','biz_ext':{},'distance':'100','photos':[{'url':'javascript:bad'},{'url':'http://store.is.autonavi.com/sample.jpg'}]}]}
-    http=AsyncMock();http.get.return_value=upstream
+    geocoded=MagicMock();geocoded.status_code=200;geocoded.json.return_value={'status':'1','geocodes':[{'location':'113.300,23.100'}]}
+    http=AsyncMock();http.get.side_effect=lambda url, **kwargs: geocoded if 'geocode/geo' in str(url) else upstream
     manager=AsyncMock();manager.__aenter__.return_value=http
     monkeypatch.setattr(main.httpx,'AsyncClient',lambda **kw:manager)
     result=client.get('/api/food/nearby').json()['data'][0]

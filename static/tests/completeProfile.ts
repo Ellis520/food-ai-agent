@@ -4,7 +4,7 @@ export {expect, type Page} from '@playwright/test'
 export async function completeProfile(page:Page){
  await page.getByLabel('昵称',{exact:true}).fill('测试同学')
  await page.getByRole('button',{name:'保存并进入'}).click()
- await page.getByRole('heading',{name:'欢迎来到食刻 AI'}).waitFor({state:'hidden'})
+ await page.getByRole('heading',{name:'欢迎来到食刻',exact:true}).waitFor({state:'hidden'})
 }
 
 export const test=baseTest.extend({

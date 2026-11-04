@@ -36,12 +36,12 @@ async function submit() {
 <template>
   <main id="main" class="profile-setup">
     <section class="setup-intro" aria-labelledby="setup-title">
-      <span class="brand-mark"><Icon name="Sprout" :size="29" /></span>
-      <p class="setup-kicker">
-        {{ revisiting ? "确认资料" : "先填两样" }}
-      </p>
-      <h1 id="setup-title">欢迎来到食刻 AI</h1>
-      <p>写下昵称和校园。之后可以在个人中心改。</p>
+      <div class="setup-brand">
+        <span class="brand-mark setup-logo" aria-hidden="true"
+          ><Icon name="Sprout" :size="120"
+        /></span>
+        <h1 id="setup-title">欢迎来到食刻</h1>
+      </div>
     </section>
     <form class="panel setup-form" @submit.prevent="submit">
       <fieldset class="form-stack" :disabled="saving">
@@ -100,24 +100,30 @@ async function submit() {
   background: transparent;
   border-top: 1px solid var(--border);
 }
+.setup-brand {
+  display: inline-grid;
+  grid-template-columns: max-content;
+  justify-items: stretch;
+}
+.setup-logo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 22%;
+  margin-bottom: 16px;
+}
+.setup-logo :deep(svg) {
+  width: 58%;
+  height: 58%;
+}
 .setup-intro h1 {
   font-family: var(--sans);
   font-size: clamp(32px, 4vw, 44px);
   font-weight: 700;
   line-height: 1.25;
   color: var(--ink);
-  margin: 8px 0 12px;
-}
-.setup-intro p {
-  color: #425947;
-  line-height: 1.75;
-}
-.setup-kicker {
-  margin-top: 18px;
-  font-family: var(--sans);
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--chop);
+  margin: 0;
+  white-space: nowrap;
 }
 .setup-form {
   display: grid;
@@ -152,12 +158,8 @@ async function submit() {
     grid-template-columns: minmax(0, 1fr);
     align-content: start;
   }
-  .setup-intro .brand-mark {
-    width: 42px;
-    height: 42px;
-  }
-  .setup-kicker {
-    margin-top: 10px;
+  .setup-intro h1 {
+    font-size: 32px;
   }
 }
 </style>

@@ -1,8 +1,14 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useApp } from "../stores/app";
 import DailyPlan from "../components/DailyPlan.vue";
 import Icon from "../components/Icon.vue";
 const app = useApp();
+const greetingDate = computed(() => {
+  const date = new Date(`${app.today}T12:00:00`);
+  const week = "日一二三四五六"[date.getDay()];
+  return `${date.getMonth() + 1}月${date.getDate()}日星期${week}`;
+});
 const shortcuts = [
   { name: "饮食规划", desc: "排出早餐、午餐和晚餐", path: "/plan" },
   { name: "饮食记录", desc: "把吃过的写进今天", path: "/records" },
@@ -15,6 +21,20 @@ const shortcuts = [
 ];
 </script>
 <template>
+  <header class="home-greeting">
+    <div>
+      <span class="eyebrow">今日食刻</span>
+      <h1>
+        嗨，{{ app.profile.name }}
+        <span class="wave" aria-hidden="true">✳</span>
+      </h1>
+      <p>今天也要好好吃饭，让生活多一点好滋味。</p>
+    </div>
+    <p class="date-label">
+      <Icon name="CalendarDays" :size="16" />
+      {{ greetingDate }}
+    </p>
+  </header>
   <section class="hero">
     <div class="hero-copy">
       <span class="hero-kicker"><span></span>你的校园饮食好搭子</span>

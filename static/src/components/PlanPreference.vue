@@ -7,6 +7,7 @@ const props = defineProps<{
   disabled: boolean;
   multiple?: boolean;
   maxLength?: number;
+  placeholder?: string;
 }>();
 const value = defineModel<string>({ required: true });
 const choices = computed(() => [
@@ -47,7 +48,8 @@ function closeMenu(event: FocusEvent) {
         :disabled="disabled"
         :maxlength="maxLength ?? (multiple ? 240 : 60)"
         :placeholder="
-          multiple ? '可多选或填写，用顿号分隔' : '不限，可选择或填写'
+          placeholder ??
+          (multiple ? '可多选或填写，用顿号分隔' : '不限，可选择或填写')
         "
     /></label>
     <details v-if="!disabled" @focusout="closeMenu">

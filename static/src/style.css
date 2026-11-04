@@ -334,6 +334,52 @@ main {
   margin: 12px 0 25px;
   gap: 20px;
 }
+.page-heading-main {
+  --title-size: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+.page-heading-title {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  max-width: 100%;
+  font-size: var(--title-size);
+}
+.page-heading-title > h1 {
+  min-width: 0;
+}
+.page-heading-main > p {
+  margin-top: 0;
+}
+.page-heading-title .back-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 1.15em;
+  height: 1.15em;
+  margin: 0 0.02em 0 -0.12em;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #1c1c1c;
+  font-size: 1em;
+  line-height: 1;
+  flex: none;
+}
+.page-heading-title .back-chevron svg {
+  width: 0.82em;
+  height: 0.82em;
+}
+.page-heading-main:has(.back-chevron) > p {
+  padding-left: calc(var(--title-size) * 1.05 + 2px);
+}
 .eyebrow {
   display: block;
   font-family: var(--sans);
@@ -2616,6 +2662,51 @@ aside.sidebar .sidebar-note {
   line-height: 1.6;
   color: var(--muted);
 }
+.app-body .home-greeting {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px 28px;
+  margin: 2px 0 22px;
+  padding: 18px 2px 16px;
+  border-top: 2px solid #1f5138;
+  border-bottom: 1px solid #d7e0d4;
+}
+.app-body .home-greeting .eyebrow {
+  color: #1f5138;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+.app-body .home-greeting h1 {
+  font-size: 40px;
+  line-height: 1.15;
+  margin: 0;
+  color: #1a241c;
+}
+.app-body .home-greeting .wave {
+  color: #c6a15a;
+  font-size: 26px;
+  font-weight: 400;
+  margin-left: 10px;
+  vertical-align: 4px;
+}
+.app-body .home-greeting p {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #6a786e;
+}
+.app-body .home-greeting .date-label {
+  display: flex;
+  align-self: end;
+  margin: 0 0 2px;
+  max-width: none;
+  font-size: 15px;
+  color: #8b978c;
+  white-space: nowrap;
+}
 .app-body .hero {
   min-height: 440px;
   grid-template-columns: minmax(0, 1.08fr) minmax(260px, 0.92fr);
@@ -2844,6 +2935,19 @@ aside.sidebar .sidebar-note {
     padding: 7px 10px;
   }
 }
+.app-body .page-heading {
+  flex-wrap: wrap;
+  border-top: 2px solid #1f5138;
+  padding-top: 16px;
+}
+.app-body .page-heading > .day-mark {
+  flex: 1 0 100%;
+  margin: 0 0 8px;
+  color: #1f5138;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
 .app-body .page-heading h1 {
   font-size: 40px;
   letter-spacing: 0;
@@ -2856,6 +2960,17 @@ aside.sidebar .sidebar-note {
   font-size: 28px;
 }
 @media (max-width: 720px) {
+  .app-body .home-greeting {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding-top: 14px;
+  }
+  .app-body .home-greeting h1 {
+    font-size: 32px;
+  }
+  .app-body .home-greeting .date-label {
+    justify-self: start;
+  }
   .app-body .hero {
     grid-template-columns: 1fr;
   }
@@ -2877,6 +2992,9 @@ aside.sidebar .sidebar-note {
   }
   .app-body .page-heading h1 {
     font-size: 32px;
+  }
+  .app-body .page-heading-main {
+    --title-size: 32px;
   }
   .app-body .page-heading p {
     font-size: 15px;

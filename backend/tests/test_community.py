@@ -114,6 +114,34 @@ def test_posts_and_replies_use_the_current_profile_avatar(monkeypatch, tmp_path)
         assert author.get(f"/api/community/posts/{published['id']}/replies").json()['data']['items'][0]['avatar'] is None
 
 
+def test_renamed_profile_updates_existing_posts_and_replies(monkeypatch, tmp_path):
+    monkeypatch.setenv('FOODMOMENT_DB', str(tmp_path / 'community.sqlite'))
+    with TestClient(app) as author, TestClient(app) as reader:
+        author.get('/api/state')
+        reader.get('/api/state')
+        published = author.post('/api/community/posts', json=draft(text='改名之前的动态')).json()['data']
+        reply = author.post(
+            f"/api/community/posts/{published['id']}/replies",
+            json={'requestId': str(uuid4()), 'text': '改名之前的留言'},
+        ).json()['data']
+        original = published['author']
+
+        state = author.get('/api/state').json()['data']
+        state['state']['profile']['name'] = '新昵称'
+        picture = io.BytesIO()
+        Image.new('RGB', (8, 8), 'navy').save(picture, format='JPEG')
+        avatar = 'data:image/jpeg;base64,' + base64.b64encode(picture.getvalue()).decode()
+        state['state']['profile']['avatar'] = avatar
+        assert author.put('/api/state', json=state).status_code == 200
+
+        seen = reader.get('/api/community/posts').json()['data']['items'][0]
+        assert seen['author'] == '新昵称' and seen['author'] != original
+        assert seen['avatar'] == avatar
+        listed = author.get(f"/api/community/posts/{published['id']}/replies").json()['data']['items'][0]
+        assert listed['id'] == reply['id']
+        assert listed['author'] == '新昵称' and listed['avatar'] == avatar
+
+
 def test_likes_are_shared_and_saves_stay_personal(monkeypatch, tmp_path):
     monkeypatch.setenv('FOODMOMENT_DB', str(tmp_path / 'community.sqlite'))
     with TestClient(app) as author, TestClient(app) as reader:

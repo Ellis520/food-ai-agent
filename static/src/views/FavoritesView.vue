@@ -147,18 +147,10 @@ watch(
 
 <style scoped>
 .back-chevron {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-start;
-  width: 50px;
-  height: 50px;
-  margin-left: -8px;
   border: 0;
   background: transparent;
   color: #1c1c1c;
   padding: 0;
-  flex: none;
 }
 .restaurant-list {
   display: flex;

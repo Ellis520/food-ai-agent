@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { campuses } from "../api/campuses";
 import type { Profile } from "../api/types";
 import {
   dietaryRestrictions,
@@ -10,6 +11,8 @@ import PlanPreference from "./PlanPreference.vue";
 
 defineProps<{ showGoal?: boolean }>();
 const draft = defineModel<Profile>({ required: true });
+if (!campuses.includes(draft.value.campus as (typeof campuses)[number]))
+  draft.value.campus = "";
 function getPreference(field: "taste" | "cuisine", options: string[]) {
   return (
     draft.value[field] ??
@@ -32,12 +35,13 @@ function getPreference(field: "taste" | "cuisine", options: string[]) {
         placeholder="您希望大家怎么称呼您？"
     /></label>
     <label
-      >校园<input
-        v-model.trim="draft.campus"
-        required
-        maxlength="40"
-        placeholder="例如：中山大学南校区"
-    /></label>
+      >校园<select v-model="draft.campus" required>
+        <option v-if="!draft.campus" value="" disabled>请选择校园</option>
+        <option v-for="campus in campuses" :key="campus" :value="campus">
+          {{ campus }}
+        </option>
+      </select></label
+    >
   </div>
   <div class="two-col profile-fields-row">
     <label
@@ -76,6 +80,7 @@ function getPreference(field: "taste" | "cuisine", options: string[]) {
       :disabled="false"
       :max-length="60"
       multiple
+      placeholder="不限"
     />
     <PlanPreference
       :model-value="getPreference('cuisine', cuisines)"
@@ -85,6 +90,7 @@ function getPreference(field: "taste" | "cuisine", options: string[]) {
       :disabled="false"
       :max-length="60"
       multiple
+      placeholder="不限"
     />
   </div>
   <PlanPreference
@@ -102,6 +108,7 @@ function getPreference(field: "taste" | "cuisine", options: string[]) {
     :disabled="false"
     :max-length="200"
     multiple
+    placeholder="不限"
   />
 </template>
 

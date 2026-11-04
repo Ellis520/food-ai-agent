@@ -56,7 +56,7 @@ class StrictModel(BaseModel):
 
 class Profile(StrictModel):
     name: str = Field(default='小食同学', min_length=1, max_length=20)
-    campus: str = Field(default='中山大学南校区', min_length=1, max_length=40)
+    campus: Literal['中山大学南校区', '中山大学北校区', '中山大学东校区', '中山大学深圳校区', '中山大学珠海校区'] = '中山大学南校区'
     budget: float = Field(default=45, ge=20, le=200)
     goal: str = Field(default='均衡饮食', max_length=50)
     preference: str = Field(default='不限', max_length=200)
@@ -770,8 +770,13 @@ async def saved_places(request: Request):
 
 
 async def search_nearby(request, keyword, location, *, category='restaurant', gps=None, radius=None, page=1):
-    session_id(request)
-    return await search_amap(keyword,location,category=category,gps=gps,radius=radius,page=page)
+    sid = session_id(request)
+    campus = None
+    with connect() as db:
+        row = db.execute('SELECT data FROM sessions WHERE id=?', (sid,)).fetchone()
+    if row:
+        campus = json.loads(row[0]).get('profile', {}).get('campus')
+    return await search_amap(keyword,location,category=category,gps=gps,radius=radius,page=page,campus=campus)
 
 
 @app.websocket('/api/asr/stream')

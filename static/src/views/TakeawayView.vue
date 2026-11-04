@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { api, isDemo } from "../api";
+import { useApp } from "../stores/app";
 import {
   campusStoreLinks,
   loadCampusTakeaway,
@@ -15,6 +16,7 @@ import PageHeader from "../components/PageHeader.vue";
 
 type Sort = "price" | "rating" | "distance";
 type Search = { keyword: string; page: number; hasMore: boolean };
+const app = useApp();
 const input = ref("");
 const budget = ref<number | "">("");
 const sort = ref<Sort>("rating");
@@ -115,7 +117,9 @@ async function loadMore() {
         <strong>食刻外卖助手</strong>
         <p>
           {{
-            isDemo ? "演示商家 · 未调用高德" : "高德商家 · 中山大学广州南校区"
+            isDemo
+              ? "演示商家 · 未调用高德"
+              : `高德商家 · ${app.profile.campus}`
           }}
         </p>
       </div>

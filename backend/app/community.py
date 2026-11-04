@@ -144,28 +144,40 @@ def display_name(db, owner):
     return json.loads(row['data']).get('profile', {}).get('name', '').strip() or '食刻同学'
 
 
-def profile_avatars(db, owners):
+def profile_cards(db, owners):
     ids = list({owner for owner in owners if owner})
     if not ids:
         return {}
     marks = ','.join('?' for _ in ids)
     rows = db.execute(f'SELECT id, data FROM sessions WHERE id IN ({marks})', ids).fetchall()
-    photos = {}
+    cards = {}
     prefix = 'data:image/jpeg;base64,'
     for row in rows:
         try:
-            avatar = json.loads(row['data']).get('profile', {}).get('avatar')
+            profile = json.loads(row['data']).get('profile') or {}
         except (TypeError, json.JSONDecodeError):
-            avatar = None
-        photos[row['id']] = (
-            avatar if isinstance(avatar, str) and avatar.startswith(prefix) and len(avatar) <= 100_000 else None
-        )
-    return photos
+            profile = {}
+        if not isinstance(profile, dict):
+            profile = {}
+        name = profile.get('name', '')
+        avatar = profile.get('avatar')
+        cards[row['id']] = {
+            'name': name.strip() if isinstance(name, str) and name.strip() else '食刻同学',
+            'avatar': (
+                avatar if isinstance(avatar, str) and avatar.startswith(prefix) and len(avatar) <= 100_000 else None
+            ),
+        }
+    return cards
 
 
-def post_data(row, owner, avatar):
+def shown_author(row, card):
+    return card['name'] if card else row['author']
+
+
+def post_data(row, owner, card):
     return {
-        'id': row['id'], 'author': row['author'], 'avatar': avatar, 'category': row['category'],
+        'id': row['id'], 'author': shown_author(row, card),
+        'avatar': None if card is None else card['avatar'], 'category': row['category'],
         'food': row['food'], 'place': row['place'], 'meetup': row['meetup'],
         'text': row['body'], 'createdAt': row['created_at'], 'mine': row['owner'] == owner,
         'imageCount': row['image_count'], 'replyCount': row['reply_count'],
@@ -173,9 +185,10 @@ def post_data(row, owner, avatar):
     }
 
 
-def reply_data(row, owner, avatar):
+def reply_data(row, owner, card):
     return {
-        'id': row['id'], 'author': row['author'], 'avatar': avatar, 'text': row['body'],
+        'id': row['id'], 'author': shown_author(row, card),
+        'avatar': None if card is None else card['avatar'], 'text': row['body'],
         'createdAt': row['created_at'], 'mine': row['owner'] == owner,
     }
 
@@ -232,8 +245,8 @@ def community_router(connect, session_id):
             """ + (" AND p.category!='buddy' AND matches_store(p.place, p.body)" if store is not None else "")
                 + " ORDER BY p.id DESC LIMIT 21",
                 (owner, owner, category, category, before, before, term, term, term)).fetchall()
-            photos = profile_avatars(db, [row['owner'] for row in rows[:20]])
-        return {'data': {'items': [post_data(row, owner, photos.get(row['owner'])) for row in rows[:20]],
+            cards = profile_cards(db, [row['owner'] for row in rows[:20]])
+        return {'data': {'items': [post_data(row, owner, cards.get(row['owner'])) for row in rows[:20]],
                          'next': rows[19]['id'] if len(rows) > 20 else None}, 'source': 'sqlite'}
 
     @router.post('/posts')
@@ -252,8 +265,8 @@ def community_router(connect, session_id):
                                [(result.lastrowid, position, image) for position, image in enumerate(images)])
             row = db.execute(POST_SELECT + ' WHERE p.owner=? AND p.request_id=?',
                              (owner, owner, owner, str(body.requestId))).fetchone()
-            photo = profile_avatars(db, [owner]).get(owner)
-        return {'data': post_data(row, owner, photo), 'source': 'sqlite'}
+            card = profile_cards(db, [owner]).get(owner)
+        return {'data': post_data(row, owner, card), 'source': 'sqlite'}
 
     @router.get('/posts/{post_id}/images/{position}')
     def image(post_id: int, position: int, request: Request):
@@ -296,8 +309,8 @@ def community_router(connect, session_id):
                 ORDER BY s.created_at DESC, p.id DESC
                 LIMIT 50
             """, (owner, owner, owner)).fetchall()
-            photos = profile_avatars(db, [row['owner'] for row in rows])
-        return {'data': {'items': [post_data(row, owner, photos.get(row['owner'])) for row in rows],
+            cards = profile_cards(db, [row['owner'] for row in rows])
+        return {'data': {'items': [post_data(row, owner, cards.get(row['owner'])) for row in rows],
                          'next': None}, 'source': 'sqlite'}
 
     @router.put('/posts/{post_id}/like')
@@ -343,8 +356,8 @@ def community_router(connect, session_id):
                 ORDER BY id DESC LIMIT 31
             """, (post_id, before, before)).fetchall()
             shown = list(reversed(rows[:30]))
-            photos = profile_avatars(db, [row['owner'] for row in shown])
-        return {'data': {'items': [reply_data(row, owner, photos.get(row['owner'])) for row in shown],
+            cards = profile_cards(db, [row['owner'] for row in shown])
+        return {'data': {'items': [reply_data(row, owner, cards.get(row['owner'])) for row in shown],
                          'next': rows[29]['id'] if len(rows) > 30 else None}, 'source': 'sqlite'}
 
     @router.post('/posts/{post_id}/replies')
@@ -361,8 +374,8 @@ def community_router(connect, session_id):
                 raise HTTPException(404, '帖子已删除。') from error
             row = db.execute('SELECT * FROM community_replies WHERE post_id=? AND owner=? AND request_id=?',
                              (post_id, owner, str(body.requestId))).fetchone()
-            photo = profile_avatars(db, [owner]).get(owner)
-        return {'data': reply_data(row, owner, photo), 'source': 'sqlite'}
+            card = profile_cards(db, [owner]).get(owner)
+        return {'data': reply_data(row, owner, card), 'source': 'sqlite'}
 
     @router.delete('/posts/{post_id}/replies/{reply_id}')
     def delete_reply(post_id: int, reply_id: int, request: Request):
