@@ -1,0 +1,15 @@
+{
+  "profile": {
+    "name": "小食同学",
+    "campus": "中山大学南校区",
+    "budget": 45,
+    "goal": "均衡饮食",
+    "preference": "不限",
+    "allergies": "",
+    "kcal": 2000
+  },
+  "meals": [],
+  "plans": {},
+  "favorites": [],
+  "messages": []
+}

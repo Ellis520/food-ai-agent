@@ -1,0 +1,5 @@
+funasr==1.4.16
+modelscope>=1.20,<2
+numpy>=2,<3
+websockets>=15,<17
+soundfile>=0.13,<1

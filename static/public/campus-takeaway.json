@@ -1,0 +1,21 @@
+[
+  {
+    "id": "kfc-shangdu-meituan",
+    "name": "肯德基宅急送",
+    "store": "肯德基宅急送（上渡路店）",
+    "category": "汉堡炸鸡",
+    "platform": "美团外卖",
+    "destination": "menu",
+    "url": "https://dpurl.cn/6ruMd4Sz",
+    "keywords": [
+      "肯德基",
+      "KFC",
+      "汉堡",
+      "炸鸡",
+      "鸡翅",
+      "薯条",
+      "上渡路店"
+    ],
+    "description": "想吃汉堡、炸鸡或薯条，可以打开上渡路店的菜单查看当日供应和配送范围。"
+  }
+]

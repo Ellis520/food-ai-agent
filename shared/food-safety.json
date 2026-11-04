@@ -1,0 +1,23 @@
+{
+  "reviewedAt": "2026-11-03",
+  "sources": [
+    {"id":"medicine","title":"福建省药监局 · 为什么吃头孢不能喝酒","url":"https://yjj.scjgj.fujian.gov.cn/ztzl/kpzl/qgaqyyy/202312/t20231215_6334595.htm","evidence":"部分头孢类药物与酒精可能发生严重相互作用，出现潮红、心悸，甚至呼吸困难、血压下降。不能把所有头孢视为同一种药。具体饮酒限制应核对确切药品说明书并咨询医生或药师。"},
+    {"id":"who","title":"WHO · 食品安全五要点","url":"https://www.who.int/docs/default-source/wpro---documents/posters/food-safety/the-five-keys-to-safer-food-brochure.pdf","evidence":"处理食物前后洗手并清洁用具；生肉、禽、海鲜与熟食分开，用不同刀具砧板和容器；肉、禽、蛋和海鲜应彻底做熟，熟食再加热也应彻底；熟食常温放置不超过2小时，及时冷藏，最好低于5℃；冷冻食品不要在室温下解冻。"},
+    {"id":"allergy","title":"北京市卫健委 · 食物过敏与喉头水肿警示","url":"https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jzjj/202610/t20261015_4903805.html","evidence":"已明确食物过敏者应规避致敏食物，外出就餐告知商家过敏史，遵医嘱随身携带急救药品。出现咽喉肿胀、胸闷喘憋等高危症状应立即拨打120。食物不耐受与食物过敏不同。"},
+    {"id":"emergency","title":"国家卫健委 · 120急救电话正确拨打指南（北京市政府转载）","url":"https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202607/t20260713_4759730.html","evidence":"中国大陆120为紧急医疗救援电话。呼吸困难、晕厥、意识异常、严重过敏等突发危险情况需要立即求助。说明具体地址、患者症状，听从调度人员指导。"}
+  ],
+  "tips": [
+    {"id":"alcohol","category":"药物与酒精","icon":"ShieldCheck","title":"用药时，先别急着碰酒","summary":"部分头孢与酒精可能发生严重反应。先核对具体药名和说明书，向医生或药师确认，不套用统一的“隔几天就安全”。","question":"吃头孢期间可以喝酒吗？","sourceIds":["medicine"]},
+    {"id":"separate","category":"日常卫生","icon":"Utensils","title":"生熟分开，餐具也要分开","summary":"生肉、海鲜与即食食物分开存放和处理；刀、砧板、容器别混用，处理前后认真洗手。","question":"做饭时怎样避免生熟食物交叉污染？","sourceIds":["who"]},
+    {"id":"cook","category":"日常卫生","icon":"CookingPot","title":"肉、蛋、海鲜，彻底做熟","summary":"不要只看表面颜色判断熟度。食品应彻底煮熟，熟食再次加热也要充分。","question":"肉和海鲜怎样吃更安全？","sourceIds":["who"]},
+    {"id":"leftovers","category":"储存与剩菜","icon":"Refrigerator","title":"剩饭剩菜，及时冷藏","summary":"熟食常温放置不要超过2小时，及时冷藏；再吃前彻底加热。存放条件不明时，不凭闻起来正常判断安全。","question":"外卖没吃完，怎么保存更安全？","sourceIds":["who"]},
+    {"id":"allergens","category":"过敏提醒","icon":"HeartPulse","title":"点餐前，说清楚你的过敏原","summary":"明确过敏时应避开致敏食物并告知商家。若出现喉咙肿胀、呼吸困难等危险症状，应立即求助。","question":"我对花生过敏，点外卖需要注意什么？","sourceIds":["allergy"]}
+  ],
+  "urgentKeywords":["呼吸困难","喘不过气","无法呼吸","喉咙肿","咽喉肿","喉头水肿","晕厥","昏迷","意识不清","嘴唇发紫","胸痛","呕血"],
+  "urgent":{
+    "answer":"如果你或当事人现在出现呼吸困难、喉咙肿胀、晕厥、意识不清等危险症状，请立即拨打中国大陆120，或所在地急救电话，不要等待在线问答。本提示由危险症状关键词触发，不是对你的诊断；若你只是在了解常识，可在安全时说明问题背景。",
+    "steps":["请身边的人协助联系急救，说明位置、症状及已知的食物和药物接触情况。","按急救调度人员的指示行动；不要自行催吐或用偏方处理。"],
+    "followUp":"如已联系急救，请以现场医护和调度人员指导为准。",
+    "sourceIds":["emergency","allergy"]
+  }
+}

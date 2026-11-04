@@ -1,0 +1,62 @@
+import {expect,test} from '@playwright/test'
+
+test('新用户填写资料，保存成功后进入原页面并同步个人中心',async({page})=>{
+ await page.setViewportSize({width:390,height:844})
+ await page.goto('http://127.0.0.1:5174/#/profile')
+ await expect(page.getByRole('heading',{name:'欢迎来到食刻 AI'})).toBeVisible()
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
+
+ await page.getByLabel('昵称',{exact:true}).fill('小橙')
+ await page.getByLabel('校园',{exact:true}).fill('中山大学广州南校区')
+ await page.getByLabel('每日预算（元）',{exact:true}).fill('36.5')
+ await page.getByLabel('每日热量目标（kcal）',{exact:true}).fill('1850')
+ await page.getByLabel('展开饮食偏好选项').click()
+ await page.getByRole('button',{name:'素食',exact:true}).click()
+ await page.getByLabel(/过敏原/).fill('花生、牛奶')
+ await page.route('**/api/state',route=>route.request().method()==='PUT'
+  ? route.fulfill({status:503,json:{detail:'稍后再试'}})
+  : route.continue(),{times:1})
+ await page.getByRole('button',{name:'保存并进入'}).click()
+ await expect(page.getByRole('alert')).toContainText('稍后再试')
+ await expect(page.getByLabel('昵称',{exact:true})).toHaveValue('小橙')
+ await page.getByRole('button',{name:'保存并进入'}).click()
+
+ await expect(page.getByRole('heading',{name:'我的基本资料'})).toBeVisible()
+ await page.reload()
+ await expect(page.getByLabel('昵称',{exact:true})).toHaveValue('小橙')
+ await expect(page.getByLabel('校园',{exact:true})).toHaveValue('中山大学广州南校区')
+ await expect(page.getByLabel('每日预算（元）',{exact:true})).toHaveValue('36.5')
+ await expect(page.getByLabel('每日热量目标（kcal）',{exact:true})).toHaveValue('1850')
+ await expect(page.getByRole('textbox',{name:'饮食偏好',exact:true})).toHaveValue('素食')
+ await expect(page.getByLabel(/过敏原/)).toHaveValue('花生、牛奶')
+ await page.getByLabel('昵称',{exact:true}).fill('橙子同学')
+ await page.getByRole('button',{name:'保存资料'}).click()
+ await expect(page.getByRole('status')).toContainText('个人资料已更新')
+ await page.reload()
+ await expect(page.getByLabel('昵称',{exact:true})).toHaveValue('橙子同学')
+ await page.goto('http://127.0.0.1:5174/#/?setup=1')
+ await expect(page.getByRole('group',{name:'美好的一天有食刻陪伴'})).toBeVisible()
+ await expect(page.getByLabel('昵称',{exact:true})).toHaveValue('橙子同学')
+ await page.getByRole('button',{name:'返回',exact:true}).click()
+ await expect(page.locator('.hero')).toBeVisible()
+ await expect(page).not.toHaveURL(/setup=1/)
+})
+
+test('旧版资料会预填，确认一次后直接进入',async({page})=>{
+ const origin='http://127.0.0.1:5174'
+ const response=await page.request.get(origin+'/api/state')
+ const {data}=await response.json()
+ delete data.state.profile.setupComplete
+ data.state.profile.name='旧版同学'
+ data.state.profile.allergies='芝麻'
+ expect((await page.request.put(origin+'/api/state',{data})).ok()).toBe(true)
+ await page.goto(origin+'/#/profile')
+ await expect(page.getByRole('heading',{name:'欢迎来到食刻 AI'})).toBeVisible()
+ await expect(page.getByLabel('昵称',{exact:true})).toHaveValue('旧版同学')
+ await expect(page.getByLabel(/过敏原/)).toHaveValue('芝麻')
+ await page.getByRole('button',{name:'保存并进入'}).click()
+ await expect(page.getByRole('heading',{name:'我的基本资料'})).toBeVisible()
+ await page.reload()
+ await expect(page.getByLabel('昵称',{exact:true})).toHaveValue('旧版同学')
+ await expect(page.getByRole('heading',{name:'欢迎来到食刻 AI'})).toHaveCount(0)
+})
