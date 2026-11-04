@@ -52,3 +52,7 @@ npm --prefix static test
 | 语音和验收 | `asr`、`backend/tests`、`static/tests` | 待团队填写 |
 
 [接口说明](docs/API.md) · [Gitee 协作流程](docs/GITEE.md)
+
+## 开源许可
+
+本项目采用 [MIT 许可证](LICENSE)。
