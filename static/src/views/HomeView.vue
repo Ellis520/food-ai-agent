@@ -1,15 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { useApp } from "../stores/app";
 import DailyPlan from "../components/DailyPlan.vue";
+import Icon from "../components/Icon.vue";
 const app = useApp();
-const date = computed(() =>
-  new Date().toLocaleDateString("zh-CN", {
-    month: "long",
-    day: "numeric",
-    weekday: "long",
-  }),
-);
 const shortcuts = [
   { name: "饮食规划", desc: "排出早餐、午餐和晚餐", path: "/plan" },
   { name: "饮食记录", desc: "把吃过的写进今天", path: "/records" },
@@ -24,13 +17,29 @@ const shortcuts = [
 <template>
   <section class="hero">
     <div class="hero-copy">
-      <p class="menu-date">{{ date }}</p>
-      <h1>今天的食单</h1>
-      <p>{{ app.profile.name }}，先看三餐，再决定要不要记一笔。</p>
-      <RouterLink to="/chat" class="primary">和食刻聊聊</RouterLink>
+      <span class="hero-kicker"><span></span>你的校园饮食好搭子</span>
+      <h2>每一餐的小事，<br />都值得用心一点。</h2>
+      <p>
+        不知道今天吃什么？让食刻陪你一起，<br />发现好吃的、适合你的、刚刚好的那一餐。
+      </p>
+      <RouterLink to="/chat" class="primary"
+        >和食刻聊聊 <Icon name="ArrowUpRight" :size="18"
+      /></RouterLink>
+      <div class="hero-foot">
+        <span>✦</span> 从「今天吃什么」开始，照顾好自己
+      </div>
     </div>
-    <DailyPlan :date="app.today" compact />
+    <div class="hero-visual">
+      <div class="orbit-label top">🥑 新鲜灵感，每天一点</div>
+      <span class="brand-mark hero-mark" aria-hidden="true"
+        ><Icon name="Sprout" :size="92"
+      /></span>
+      <div class="orbit-label bottom">
+        <span class="status-dot"></span> 今日份的元气，已就位
+      </div>
+    </div>
   </section>
+  <DailyPlan :date="app.today" compact />
   <section class="stats-grid" aria-label="今日饮食">
     <article class="stat">
       <p>

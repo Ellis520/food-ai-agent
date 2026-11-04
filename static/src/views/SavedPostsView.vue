@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { ChevronLeft } from "lucide-vue-next";
 import { isDemo } from "../api";
 import {
   community,
@@ -12,6 +14,7 @@ import CommunityReplies from "../components/CommunityReplies.vue";
 import Icon from "../components/Icon.vue";
 import PageHeader from "../components/PageHeader.vue";
 
+const router = useRouter();
 const posts = ref<Post[]>([]);
 const loading = ref(true);
 const error = ref("");
@@ -39,11 +42,21 @@ function drop(id: number) {
   if (openReplies.value === id) openReplies.value = null;
 }
 
+function back() {
+  if (window.history.state?.back) router.back();
+  else void router.push("/profile");
+}
+
 onMounted(() => void load());
 </script>
 
 <template>
   <PageHeader title="重温宝藏动态" description="收藏过的动态都在这里。">
+    <template #leading>
+      <button type="button" class="back-chevron" aria-label="返回上一页" @click="back">
+        <ChevronLeft :size="46" :stroke-width="2.25" />
+      </button>
+    </template>
     <RouterLink to="/profile" class="text-btn">返回个人中心</RouterLink>
   </PageHeader>
   <p v-if="loading" class="notice" role="status">正在读取收藏的动态…</p>
@@ -129,6 +142,20 @@ onMounted(() => void load());
 </template>
 
 <style scoped>
+.back-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  width: 50px;
+  height: 50px;
+  margin-left: -8px;
+  border: 0;
+  background: transparent;
+  color: #1c1c1c;
+  padding: 0;
+  flex: none;
+}
 .saved-feed {
   max-width: 760px;
 }

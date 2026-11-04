@@ -31,11 +31,13 @@ export function demoSafetyReply(message: string): SafetyReply {
         ? "alcohol"
         : /过敏|花生/.test(message)
           ? "allergens"
-          : /剩|保存|冷藏|隔夜/.test(message)
-            ? "leftovers"
-            : /生熟|污染|砧板/.test(message)
-              ? "separate"
-              : "cook"),
+          : /解冻|化冻|室温/.test(message)
+            ? "thaw"
+            : /剩|保存|冷藏|隔夜/.test(message)
+              ? "leftovers"
+              : /生熟|污染|砧板/.test(message)
+                ? "separate"
+                : "cook"),
   )!;
   const content = urgent
     ? catalog.urgent

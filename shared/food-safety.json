@@ -11,7 +11,8 @@
     {"id":"separate","category":"日常卫生","icon":"Utensils","title":"生熟分开，餐具也要分开","summary":"生肉、海鲜与即食食物分开存放和处理；刀、砧板、容器别混用，处理前后认真洗手。","question":"做饭时怎样避免生熟食物交叉污染？","sourceIds":["who"]},
     {"id":"cook","category":"日常卫生","icon":"CookingPot","title":"肉、蛋、海鲜，彻底做熟","summary":"不要只看表面颜色判断熟度。食品应彻底煮熟，熟食再次加热也要充分。","question":"肉和海鲜怎样吃更安全？","sourceIds":["who"]},
     {"id":"leftovers","category":"储存与剩菜","icon":"Refrigerator","title":"剩饭剩菜，及时冷藏","summary":"熟食常温放置不要超过2小时，及时冷藏；再吃前彻底加热。存放条件不明时，不凭闻起来正常判断安全。","question":"外卖没吃完，怎么保存更安全？","sourceIds":["who"]},
-    {"id":"allergens","category":"过敏提醒","icon":"HeartPulse","title":"点餐前，说清楚你的过敏原","summary":"明确过敏时应避开致敏食物并告知商家。若出现喉咙肿胀、呼吸困难等危险症状，应立即求助。","question":"我对花生过敏，点外卖需要注意什么？","sourceIds":["allergy"]}
+    {"id":"allergens","category":"过敏提醒","icon":"HeartPulse","title":"点餐前，说清楚你的过敏原","summary":"明确过敏时应避开致敏食物并告知商家。若出现喉咙肿胀、呼吸困难等危险症状，应立即求助。","question":"我对花生过敏，点外卖需要注意什么？","sourceIds":["allergy"]},
+    {"id":"thaw","category":"储存与剩菜","icon":"Refrigerator","title":"冷冻食品，别放在室温解冻","summary":"冷冻食品不要放在室温下化冻。放进冷藏里慢慢解，化开后尽快彻底做熟。","question":"冷冻肉可以放在室温解冻吗？","sourceIds":["who"]}
   ],
   "urgentKeywords":["呼吸困难","喘不过气","无法呼吸","喉咙肿","咽喉肿","喉头水肿","晕厥","昏迷","意识不清","嘴唇发紫","胸痛","呕血"],
   "urgent":{

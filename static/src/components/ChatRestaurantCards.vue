@@ -162,7 +162,6 @@ const region = computed(() => {
 }
 .chat-place {
   border: 1px solid var(--border);
-  background: var(--sheet);
   border-radius: 8px;
   padding: 16px;
   margin-top: 10px;

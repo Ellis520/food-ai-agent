@@ -1423,6 +1423,15 @@ select {
   justify-content: flex-start;
   flex-wrap: wrap;
 }
+.restaurant-card .actions .secondary {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fffef8;
+}
+.restaurant-card .actions .secondary:hover {
+  background: #214f39;
+  color: #fffef8;
+}
 .restaurant-card h3 {
   overflow-wrap: break-word;
   line-height: 1.4;
@@ -2608,36 +2617,110 @@ aside.sidebar .sidebar-note {
   color: var(--muted);
 }
 .app-body .hero {
-  min-height: 0;
-  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.15fr);
-  align-items: start;
-  gap: 40px;
-  padding: 36px 40px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--sheet);
+  min-height: 440px;
+  grid-template-columns: minmax(0, 1.08fr) minmax(260px, 0.92fr);
+  align-items: center;
+  gap: 8px 12px;
+  padding: 46px 48px 36px;
+  border: 1px solid rgba(214, 224, 204, 0.9);
+  border-radius: 22px;
+  background-color: #eef3e8;
+  background-image:
+    linear-gradient(
+      100deg,
+      rgba(247, 249, 244, 0.94) 0%,
+      rgba(244, 247, 241, 0.78) 36%,
+      rgba(244, 247, 241, 0.42) 68%,
+      rgba(244, 247, 241, 0.22) 100%
+    ),
+    url("/campus-card.jpg");
+  background-size: cover;
+  background-position: center 35%;
+  overflow: hidden;
 }
-.app-body .hero:after,
-.app-body .hero-visual,
-.app-body .hero-spark,
-.app-body .hero-foot {
+.app-body .hero-copy {
+  align-self: center;
+  width: auto;
+  max-width: 560px;
+}
+.app-body .hero:after {
   display: none;
+}
+.app-body .hero-kicker {
+  font-size: 15px;
+  color: #7c8d74;
+}
+.app-body .hero-kicker > span {
+  width: 8px;
+  height: 8px;
+}
+.app-body .hero h2 {
+  font-size: 46px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.28;
+  margin: 16px 0 14px;
+  color: #1a241c;
+}
+.app-body .hero-foot {
+  max-width: none;
+  font-size: 14px;
+  color: #8d9988;
+  margin-top: 22px;
+}
+.app-body .hero-foot > span {
+  color: #a3b48c;
+  font-size: 16px;
+}
+.app-body .hero-visual {
+  position: relative;
+  width: auto;
+  height: auto;
+  right: auto;
+  bottom: auto;
+  min-height: 340px;
+}
+.app-body .hero-mark {
+  width: 180px;
+  height: 180px;
+  background: transparent;
+  color: var(--green);
+  border-radius: 0;
+}
+.app-body .hero-visual .orbit-label {
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: #5c6b59;
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 8px 22px rgba(90, 110, 70, 0.1);
+}
+.app-body .hero-visual .orbit-label.top {
+  top: 22px;
+  left: 0;
+  transform: rotate(-3deg);
+}
+.app-body .hero-visual .orbit-label.bottom {
+  bottom: 28px;
+  right: 0;
+  transform: rotate(2deg);
 }
 .app-body .menu-date {
   color: var(--chop);
   font-size: 18px;
   line-height: 1.4;
 }
-.app-body .hero h1 {
-  margin: 8px 0 12px;
-  font-size: 48px;
-}
 .app-body .hero p {
-  max-width: 28em;
+  max-width: 26em;
   font-size: 16px;
-  line-height: 1.7;
-  color: #4d5c52;
-  margin-bottom: 22px;
+  line-height: 1.75;
+  color: #6a786e;
+  margin-bottom: 26px;
+}
+.app-body .hero .primary {
+  border-radius: 8px;
+  padding: 14px 22px;
+  font-size: 16px;
 }
 .app-body .primary {
   border-radius: 6px;
@@ -2696,20 +2779,19 @@ aside.sidebar .sidebar-note {
 }
 .app-body .shortcut-grid {
   grid-template-columns: 1fr 1fr;
-  gap: 0 48px;
+  gap: 14px;
 }
 .app-body .shortcut {
-  border: 0;
-  border-bottom: 1px solid var(--border);
-  border-radius: 0;
-  background: transparent;
-  padding: 16px 0 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f7f8f4;
+  padding: 18px 16px;
   box-shadow: none;
 }
 .app-body .shortcut:hover {
   transform: none;
   box-shadow: none;
-  background: transparent;
+  background: #f1f4ec;
 }
 .app-body .shortcut h3 {
   font-family: "DengXian", "等线", "Microsoft YaHei UI", "PingFang SC", sans-serif;
@@ -2729,16 +2811,37 @@ aside.sidebar .sidebar-note {
 }
 @media (max-width: 980px) {
   .app-body .hero {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 24px;
+    grid-template-columns: minmax(0, 1.15fr) minmax(168px, 0.85fr);
+    gap: 8px;
+    padding: 28px 22px 22px;
+    min-height: 0;
   }
-  .app-body .hero h1 {
-    font-size: 36px;
+  .app-body .hero h2 {
+    font-size: 30px;
   }
-  .app-body .shortcut-grid {
-    grid-template-columns: 1fr;
-    gap: 0;
+  .app-body .hero p {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .app-body .hero-kicker,
+  .app-body .hero-foot {
+    font-size: 12px;
+  }
+  .app-body .hero .primary {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  .app-body .hero-visual {
+    min-height: 230px;
+  }
+  .app-body .hero-mark {
+    width: 132px;
+    height: 132px;
+    border-radius: 34px;
+  }
+  .app-body .hero-visual .orbit-label {
+    font-size: 11px;
+    padding: 7px 10px;
   }
 }
 .app-body .page-heading h1 {
@@ -2753,6 +2856,25 @@ aside.sidebar .sidebar-note {
   font-size: 28px;
 }
 @media (max-width: 720px) {
+  .app-body .hero {
+    grid-template-columns: 1fr;
+  }
+  .app-body .hero h2 {
+    font-size: 28px;
+  }
+  .app-body .hero-visual {
+    position: relative;
+    width: auto;
+    height: auto;
+    right: auto;
+    bottom: auto;
+    min-height: 220px;
+  }
+  .app-body .hero-mark {
+    width: 132px;
+    height: 132px;
+    border-radius: 34px;
+  }
   .app-body .page-heading h1 {
     font-size: 32px;
   }
@@ -2775,4 +2897,28 @@ aside.sidebar .sidebar-note {
   .app-body .stat-icon {
     display: none;
   }
+}
+
+.panel,
+.insight,
+.restaurant-card,
+.food-card,
+.structured-card,
+.campus-takeaway-card,
+.chat-place {
+  background-color: #f4f6f0;
+  background-image:
+    linear-gradient(
+      102deg,
+      rgba(251, 252, 248, 0.92) 0%,
+      rgba(251, 252, 248, 0.84) 46%,
+      rgba(246, 248, 242, 0.7) 100%
+    ),
+    url("/campus-card.jpg");
+  background-size: cover;
+  background-position: 18% center;
+  background-repeat: no-repeat;
+}
+.modal {
+  background: var(--sheet);
 }

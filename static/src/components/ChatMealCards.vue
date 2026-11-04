@@ -88,7 +88,6 @@ const emit = defineEmits<{
 .meal-recommendations,
 .meal-choice {
   width: min(100%, 590px);
-  background: var(--sheet);
   border-color: var(--border);
   overflow-wrap: anywhere;
 }

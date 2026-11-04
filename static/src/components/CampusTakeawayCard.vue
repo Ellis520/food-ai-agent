@@ -50,7 +50,6 @@ defineProps<{ place: Restaurant; links: CampusTakeawayEntry[] }>();
   padding: clamp(16px, 2vw, 22px);
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--sheet);
   overflow-wrap: anywhere;
 }
 .tag {

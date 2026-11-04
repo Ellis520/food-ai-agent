@@ -517,6 +517,9 @@ function answerParagraphs(text: string) {
 .safety-tip {
   margin-bottom: 16px;
   padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .safety-tip-top {
   display: flex;
@@ -547,7 +550,8 @@ function answerParagraphs(text: string) {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 18px;
+  margin-top: auto;
+  padding-top: 18px;
 }
 .safety-tip-footer a {
   font-size: 12px;

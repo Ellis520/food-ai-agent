@@ -155,7 +155,7 @@ async function analyze() {
       <p>
         这是已记下内容的统计。记录还少也值得看看，之后记得多一些，回顾会更贴近您的日常。
       </p>
-      <RouterLink to="/records" class="secondary">再记录一餐</RouterLink>
+      <RouterLink to="/records" class="primary">再记录一餐</RouterLink>
     </aside>
   </div>
   <section class="panel">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import { ChevronLeft } from "lucide-vue-next";
 import { api, isDemo } from "../api";
 import { restaurants } from "../api/mock";
 import { walkingUrl } from "../api/restaurantActions";
@@ -70,9 +71,16 @@ watch(
 
 <template>
   <PageHeader title="重温美好时刻" description="收藏过的店铺都在这里。">
-    <button type="button" class="secondary" @click="goBack">
-      返回上一页
-    </button>
+    <template #leading>
+      <button
+        type="button"
+        class="back-chevron"
+        aria-label="返回上一页"
+        @click="goBack"
+      >
+        <ChevronLeft :size="46" :stroke-width="2.25" />
+      </button>
+    </template>
   </PageHeader>
   <p v-if="loading" class="notice" role="status">正在读取收藏的店铺…</p>
   <p v-else-if="error" class="notice error" role="alert">{{ error }}</p>
@@ -138,6 +146,20 @@ watch(
 </template>
 
 <style scoped>
+.back-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  width: 50px;
+  height: 50px;
+  margin-left: -8px;
+  border: 0;
+  background: transparent;
+  color: #1c1c1c;
+  padding: 0;
+  flex: none;
+}
 .restaurant-list {
   display: flex;
   flex-direction: column;

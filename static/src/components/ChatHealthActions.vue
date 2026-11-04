@@ -219,7 +219,6 @@ async function lookup(kind: HealthLookup) {
   border-color: #db9c82;
 }
 .health-actions {
-  background: #fffefb;
   border-color: #dde5db;
   padding: 14px 16px;
 }
