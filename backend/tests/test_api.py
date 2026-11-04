@@ -413,3 +413,39 @@ def test_asr_proxy_forwards_pcm_and_returns_final_text(client,monkeypatch):
         assert final['text']=='测试校正结果' and final['mode']=='2pass-offline'
     assert json.loads(upstream.sent[0])['audio_fs']==16000
     assert b'\x00\x00\x01\x00' in upstream.sent
+
+def test_favorite_places_resolve_saved_poi(client, monkeypatch):
+    monkeypatch.setenv('AMAP_WEB_SERVICE_KEY', 'test-key')
+    monkeypatch.setenv('CAMPUS_LOCATION', '113.3,23.1')
+    state = client.get('/api/state').json()['data']
+    state['state']['favorites'] = ['B0FFFSW069', 'not-an-id']
+    assert client.put('/api/state', json=state).status_code == 200
+    upstream = MagicMock()
+    upstream.status_code = 200
+    upstream.json.return_value = {'status': '1', 'pois': [{
+        'id': 'B0FFFSW069',
+        'name': '尚膳御汤·脆肉鲩焖扇鸡(江怡路店)',
+        'location': '113.301,23.101',
+        'address': '江怡路104号',
+        'biz_ext': {'cost': '84', 'rating': '4.6', 'open_time': '10:30-23:00'},
+        'photos': [{'url': 'https://store.is.autonavi.com/sample.jpg'}],
+    }]}
+    http = AsyncMock()
+    http.get.return_value = upstream
+    manager = AsyncMock()
+    manager.__aenter__.return_value = http
+    monkeypatch.setattr(main.httpx, 'AsyncClient', lambda **kw: manager)
+    result = client.get('/api/food/favorites')
+    assert result.status_code == 200
+    body = result.json()['data']
+    assert body['missing'] == 1
+    assert body['restaurants'][0]['name'] == '尚膳御汤·脆肉鲩焖扇鸡(江怡路店)'
+    assert body['restaurants'][0]['photoUrl'] == 'https://store.is.autonavi.com/sample.jpg'
+    assert body['restaurants'][0]['price'] == 84
+    assert http.get.call_args.args[0].endswith('/place/detail')
+    assert http.get.call_args.kwargs['params']['id'] == 'B0FFFSW069'
+
+def test_favorite_places_skip_lookup_when_empty(client):
+    result = client.get('/api/food/favorites')
+    assert result.status_code == 200
+    assert result.json()['data'] == {'restaurants': [], 'missing': 0}

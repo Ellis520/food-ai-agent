@@ -39,7 +39,7 @@ const app = useApp();
         @click="app.toggleFavorite(restaurant.id)"
       >
         <Icon
-          name="Heart"
+          name="Star"
           :class="{ filled: app.favorites.includes(restaurant.id) }"
         />
       </button>

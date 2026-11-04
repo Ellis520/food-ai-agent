@@ -9,6 +9,7 @@ import {
   type Post,
 } from "../api/community";
 import CommunityComposer from "../components/CommunityComposer.vue";
+import CommunityReactions from "../components/CommunityReactions.vue";
 import CommunityReplies from "../components/CommunityReplies.vue";
 import Icon from "../components/Icon.vue";
 import PageHeader from "../components/PageHeader.vue";
@@ -208,9 +209,12 @@ onMounted(() => void load());
         class="panel community-post"
       >
         <div class="post-top">
-          <span class="avatar" aria-hidden="true">{{
-            Array.from(post.author)[0]
-          }}</span>
+          <span class="avatar" aria-hidden="true"
+            ><img v-if="post.avatar" :src="post.avatar" alt="" /><template
+              v-else
+              >{{ Array.from(post.author)[0] }}</template
+            ></span
+          >
           <div class="post-author">
             <strong>{{ post.author }}</strong
             ><time :datetime="post.createdAt">{{
@@ -253,6 +257,7 @@ onMounted(() => void load());
           </a>
         </div>
         <div class="post-actions">
+          <CommunityReactions :post="post" />
           <button
             class="secondary"
             :aria-expanded="openReplies === post.id"
@@ -453,10 +458,13 @@ onMounted(() => void load());
 }
 .post-actions {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   margin-top: 12px;
+  flex-wrap: wrap;
+}
+.post-actions .secondary {
+  margin-left: auto;
 }
 .post-actions button {
   font-size: 13px;

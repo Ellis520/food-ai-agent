@@ -61,7 +61,7 @@ test('计划确认、去重、编辑和删除联动真实SQLite、首页与习�
 test('未来计划和失效计划不可误记，调整餐次后解除原计划关联',async({page})=>{
  const {today,tomorrow}=await seed(page)
  await page.goto('/#/plan')
- await page.locator('.week-tabs button').nth(1).click()
+ await page.getByRole('button',{name:tomorrow}).click()
  const progress=page.getByRole('region',{name:'计划打卡'})
  await expect(progress.getByText('到用餐当天再记录')).toHaveCount(3)
  await expect(progress.getByRole('link',{name:/确认.*用餐/})).toHaveCount(0)

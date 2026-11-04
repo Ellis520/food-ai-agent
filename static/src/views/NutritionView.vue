@@ -880,11 +880,12 @@ function exportReport() {
 }
 @media (max-width: 600px) {
   .nutrition-toolbar {
+    justify-content: flex-start;
     gap: 12px;
     margin-bottom: 20px;
   }
   .nutrition-tabs button {
-    font-size: 11px;
+    font-size: 15px;
     padding: 8px 12px;
   }
   .nutrition-workspace {

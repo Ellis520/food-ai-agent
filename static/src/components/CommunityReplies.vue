@@ -97,6 +97,12 @@ onMounted(() => void load());
     <ul v-if="replies.length">
       <li v-for="reply in replies" :key="reply.id">
         <div class="reply-meta">
+          <span class="avatar small-avatar" aria-hidden="true"
+            ><img v-if="reply.avatar" :src="reply.avatar" alt="" /><template
+              v-else
+              >{{ Array.from(reply.author)[0] }}</template
+            ></span
+          >
           <strong>{{ reply.author }}</strong
           ><time :datetime="reply.createdAt">{{
             communityTime(reply.createdAt)

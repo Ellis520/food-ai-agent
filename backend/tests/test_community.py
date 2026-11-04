@@ -87,3 +87,58 @@ def test_invalid_posts_leave_no_rows_and_buddy_replies_are_shared(monkeypatch, t
         assert author.delete(post_url).is_success
         assert reader.get(post_url+'/replies').status_code == 404
         assert reader.post(post_url+'/replies', json={'requestId': str(uuid4()), 'text': '迟到了'}).status_code == 404
+
+
+def test_posts_and_replies_use_the_current_profile_avatar(monkeypatch, tmp_path):
+    monkeypatch.setenv('FOODMOMENT_DB', str(tmp_path / 'community.sqlite'))
+    with TestClient(app) as author, TestClient(app) as reader:
+        author.get('/api/state')
+        reader.get('/api/state')
+        picture = io.BytesIO()
+        Image.new('RGB', (8, 8), 'teal').save(picture, format='JPEG')
+        avatar = 'data:image/jpeg;base64,' + base64.b64encode(picture.getvalue()).decode()
+        state = author.get('/api/state').json()['data']
+        state['state']['profile']['avatar'] = avatar
+        assert author.put('/api/state', json=state).status_code == 200
+
+        published = author.post('/api/community/posts', json=draft()).json()['data']
+        assert published['avatar'] == avatar
+        listed = reader.get('/api/community/posts').json()['data']['items'][0]
+        assert listed['avatar'] == avatar and 'owner' not in listed
+
+        reply = reader.post(
+            f"/api/community/posts/{published['id']}/replies",
+            json={'requestId': str(uuid4()), 'text': '看起来不错'},
+        ).json()['data']
+        assert reply['avatar'] is None
+        assert author.get(f"/api/community/posts/{published['id']}/replies").json()['data']['items'][0]['avatar'] is None
+
+
+def test_likes_are_shared_and_saves_stay_personal(monkeypatch, tmp_path):
+    monkeypatch.setenv('FOODMOMENT_DB', str(tmp_path / 'community.sqlite'))
+    with TestClient(app) as author, TestClient(app) as reader:
+        author.get('/api/state')
+        reader.get('/api/state')
+        published = author.post('/api/community/posts', json=draft(text='值得再看一次')).json()['data']
+        assert published['likeCount'] == 0 and published['liked'] is False and published['saved'] is False
+        url = f"/api/community/posts/{published['id']}"
+
+        liked = author.put(url + '/like', json={'on': True}).json()['data']
+        assert liked == {'likeCount': 1, 'liked': True, 'saved': False}
+        assert author.put(url + '/like', json={'on': True}).json()['data']['likeCount'] == 1
+        seen = reader.get('/api/community/posts').json()['data']['items'][0]
+        assert seen['likeCount'] == 1 and seen['liked'] is False and seen['saved'] is False
+        assert reader.put(url + '/like', json={'on': True}).json()['data']['likeCount'] == 2
+        assert author.put(url + '/like', json={'on': False}).json()['data']['likeCount'] == 1
+
+        assert reader.put(url + '/save', json={'on': True}).json()['data']['saved'] is True
+        assert author.get('/api/community/posts/saved').json()['data']['items'] == []
+        saved = reader.get('/api/community/posts/saved').json()['data']['items']
+        assert [item['id'] for item in saved] == [published['id']]
+        assert saved[0]['saved'] is True and saved[0]['text'] == '值得再看一次'
+        assert reader.put(url + '/save', json={'on': False}).json()['data']['saved'] is False
+        assert reader.get('/api/community/posts/saved').json()['data']['items'] == []
+
+        assert author.delete(url).is_success
+        assert reader.put(url + '/save', json={'on': True}).status_code == 404
+        assert reader.put(url + '/like', json={'on': True}).status_code == 404

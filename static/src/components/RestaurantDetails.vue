@@ -14,6 +14,7 @@ import {
 } from "../api/campusTakeaway";
 import { walkingUrl } from "../api/restaurantActions";
 import type { Restaurant } from "../api/types";
+import CommunityReactions from "./CommunityReactions.vue";
 import CommunityReplies from "./CommunityReplies.vue";
 import Icon from "./Icon.vue";
 import RestaurantPhoto from "./RestaurantPhoto.vue";
@@ -193,6 +194,12 @@ onMounted(() => {
         </p>
         <article v-for="post in posts" :key="post.id" class="store-review">
           <header>
+            <span class="avatar small-avatar" aria-hidden="true"
+              ><img v-if="post.avatar" :src="post.avatar" alt="" /><template
+                v-else
+                >{{ Array.from(post.author)[0] }}</template
+              ></span
+            >
             <strong>{{ post.author }}</strong>
             <time :datetime="post.createdAt">{{
               communityTime(post.createdAt)
@@ -214,6 +221,7 @@ onMounted(() => {
               loading="lazy"
             />
           </div>
+          <CommunityReactions :post="post" />
           <button
             class="text-btn"
             type="button"

@@ -204,6 +204,12 @@ export const api = {
     });
     return request("/food/search?" + query);
   },
+  async favoriteRestaurants(): Promise<{
+    restaurants: Restaurant[];
+    missing: number;
+  }> {
+    return request("/food/favorites");
+  },
   async safetyAsk(
     message: string,
     history: SafetyTurn[],

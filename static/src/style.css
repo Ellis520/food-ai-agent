@@ -249,6 +249,7 @@ strong {
   justify-content: center;
   width: 36px;
   height: 36px;
+  overflow: hidden;
   background: #f4dfbd;
   color: #967b4d;
   font-size: 15px;
@@ -868,6 +869,10 @@ main {
 .page-heading h1 {
   font-size: 40px;
 }
+.page-heading > .primary {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 .page-heading p {
   font-size: 16px;
   max-width: 40em;
@@ -980,13 +985,27 @@ select {
   gap: 16px;
 }
 .week-tabs {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  display: flex;
   gap: 0;
   margin-bottom: 24px;
   border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  cursor: grab;
+  touch-action: pan-x;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.week-tabs::-webkit-scrollbar {
+  display: none;
+  height: 0;
+}
+.week-tabs.dragging {
+  cursor: grabbing;
+  user-select: none;
 }
 .week-tabs button {
+  flex: 0 0 calc(100% / 7);
+  min-width: 76px;
   border: 0;
   border-bottom: 2px solid transparent;
   border-radius: 0;
@@ -1014,6 +1033,13 @@ select {
 }
 .week-tabs span {
   font-size: 13px;
+}
+.week-tabs span.is-today {
+  font-weight: 700;
+}
+.week-tabs .month {
+  font-size: 11px;
+  letter-spacing: 0.04em;
 }
 .empty-state {
   text-align: left;
@@ -1122,11 +1148,11 @@ select {
   width: 100%;
   height: 280px;
 }
-.chart.is-slidable {
+.chart.slidable {
   cursor: grab;
   touch-action: pan-y;
 }
-.chart.is-slidable:active {
+.chart.slidable:active {
   cursor: grabbing;
 }
 .chart-hint {
@@ -1353,7 +1379,7 @@ select {
 .restaurant-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 .restaurant-card {
   background: var(--sheet);
@@ -1389,6 +1415,17 @@ select {
 }
 .restaurant-card .between {
   margin-top: 14px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.restaurant-card .actions {
+  flex: 1 1 100%;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.restaurant-card h3 {
+  overflow-wrap: break-word;
+  line-height: 1.4;
 }
 .detail-panel {
   margin-top: 20px;
@@ -1895,12 +1932,8 @@ footer {
     min-height: 390px;
   }
   .restaurant-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .restaurant-list > .notice,
-  .restaurant-list > .empty-state {
-    grid-column: 1/-1;
+    display: flex;
+    flex-direction: column;
   }
   .restaurant-top {
     gap: 8px;
@@ -2135,6 +2168,19 @@ footer {
     align-items: start;
     margin: 10px 0 22px;
     gap: 10px;
+  }
+  .page-heading:has(> .primary) {
+    flex-wrap: wrap;
+  }
+  .page-heading:has(> .primary) > div {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .page-heading > .primary {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 10px 16px;
+    font-size: 15px;
   }
   .home-greeting h1 {
     font-size: 25px;
@@ -2396,13 +2442,13 @@ footer {
     padding: 17px 12px;
   }
   .metric p {
-    font-size: 9px;
+    font-size: 13px;
   }
   .metric strong {
     font-size: 25px;
   }
   .metric strong small {
-    font-size: 9px;
+    font-size: 13px;
   }
   .meal-distribution {
     grid-template-columns: repeat(2, 1fr);
@@ -2420,9 +2466,6 @@ footer {
   .campus-map {
     min-height: 370px;
   }
-  .restaurant-list {
-    grid-template-columns: 1fr;
-  }
   .restaurant-card {
     padding: 16px;
   }
@@ -2438,10 +2481,10 @@ footer {
     font-size: 13px;
   }
   .restaurant-card .between {
-    gap: 5px;
+    gap: 10px;
   }
   .restaurant-card .actions {
-    gap: 10px;
+    gap: 8px 12px;
   }
   .restaurant-card .tag {
     font-size: 12px;
@@ -2483,12 +2526,6 @@ footer {
   }
   .two-col {
     gap: 10px;
-  }
-  .two-col label {
-    font-size: 10px;
-  }
-  .two-col input {
-    font-size: 11px;
   }
   .service-row {
     font-size: 10px;

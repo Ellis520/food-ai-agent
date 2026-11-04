@@ -106,5 +106,7 @@ onBeforeUnmount(() => {
       labels.map((l, i) => l + ': ' + values[i] + (unit || '')).join('；')
     "
   ></div>
-  <p v-if="canSlide" class="muted small chart-hint">向左滑动查看更早的日期</p>
+  <p v-if="canSlide" class="muted small chart-hint">
+    向左滑动查看更早的日期，不能滑过最近一天。
+  </p>
 </template>

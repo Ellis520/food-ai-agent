@@ -26,7 +26,7 @@ from .nutrition_models import EstimateRequest, NutritionRecipe
 from core.config import DIST, PLAN_OPTIONS, PROJECT
 from core.prompts import CHAT_SYSTEM_PROMPT
 from services.llm_service import qwen_turn
-from services.map_service import search_nearby as search_amap
+from services.map_service import place_details, search_nearby as search_amap
 from services.nutrition_service import estimate_missing_nutrients
 from . import food_safety
 from . import chat_health
@@ -754,6 +754,19 @@ async def food_search(request: Request, keyword: str = Query(default='', max_len
                       page: int = Query(default=1, ge=1, le=10)):
     result = await search_nearby(request, keyword.strip(), None, radius=radius, page=page)
     return envelope({'restaurants': result['data'], 'hasMore': result['hasMore']}, 'amap')
+
+
+@app.get('/api/food/favorites')
+async def saved_places(request: Request):
+    sid = session_id(request)
+    with connect() as db:
+        row = db.execute('SELECT data FROM sessions WHERE id=?', (sid,)).fetchone()
+    favorites = json.loads(row[0]).get('favorites') or []
+    ids = [item for item in favorites if isinstance(item, str)]
+    places = await place_details(ids)
+    found = {place['id'] for place in places}
+    ordered = [next(place for place in places if place['id'] == poi_id) for poi_id in ids if poi_id in found]
+    return envelope({'restaurants': ordered, 'missing': len(ids) - len(ordered)}, 'amap')
 
 
 async def search_nearby(request, keyword, location, *, category='restaurant', gps=None, radius=None, page=1):

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { useApp, dateKey } from "../stores/app";
 import { api, isDemo } from "../api";
@@ -20,9 +20,11 @@ import {
   tastes,
   cuisines,
 } from "../api/dietPreferences";
+const PAST_DAYS = 30,
+  FUTURE_DAYS = 30;
 const app = useApp(),
   budget = ref(app.profile.budget),
-  day = ref(0),
+  day = ref(PAST_DAYS),
   busy = ref(false),
   saving = ref(false),
   error = ref("");
@@ -59,18 +61,24 @@ const conflicts = computed(() =>
     app.profile.allergies,
   ),
 );
-const dates = computed(() =>
-  Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(app.today + "T12:00:00");
-    d.setDate(d.getDate() + i);
+const dates = computed(() => {
+  const start = new Date(app.today + "T12:00:00");
+  start.setDate(start.getDate() - PAST_DAYS);
+  return Array.from({ length: PAST_DAYS + 1 + FUTURE_DAYS }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const offset = i - PAST_DAYS;
     return {
       key: dateKey(d),
       label:
-        i === 0 ? "今天" : d.toLocaleDateString("zh-CN", { weekday: "short" }),
+        offset === 0
+          ? "今天"
+          : d.toLocaleDateString("zh-CN", { weekday: "short" }),
       date: d.getDate(),
+      month: `${d.getMonth() + 1}月`,
     };
-  }),
-);
+  });
+});
 const selected = computed(() => dates.value[day.value].key),
   items = ref<PlanItem[]>(copy(app.plans[app.today] || []));
 function copy(plan: PlanItem[], target = budget.value) {
@@ -160,20 +168,67 @@ if (fromChat?.planItems && fromChat.planDate) {
   if (index >= 0) {
     day.value = index;
     items.value = copy(fromChat.planItems);
-  } else error.value = "这份聊天计划已不在未来7天内，请重新生成。";
+  } else error.value = "这份聊天计划已不在可查看的日期内，请重新生成。";
 }
+const weekScroller = ref<HTMLElement>(),
+  weekDragging = ref(false);
+let dragOrigin = 0,
+  dragScroll = 0,
+  dragged = false,
+  dragPointer = -1;
+function revealDay(index: number, alignStart = false) {
+  const button = weekScroller.value?.querySelectorAll("button")[index];
+  button?.scrollIntoView({
+    inline: alignStart ? "start" : "nearest",
+    block: "nearest",
+  });
+}
+onMounted(() => nextTick(() => revealDay(day.value, true)));
 watch(
   () => app.today,
   (today) => {
-    day.value = 0;
+    day.value = PAST_DAYS;
     items.value = copy(app.plans[today] || []);
     error.value = "";
+    nextTick(() => revealDay(day.value, true));
   },
 );
+function onWeekPointerDown(event: PointerEvent) {
+  if (event.pointerType !== "mouse" || event.button !== 0) return;
+  const scroller = weekScroller.value;
+  if (!scroller) return;
+  dragPointer = event.pointerId;
+  dragOrigin = event.clientX;
+  dragScroll = scroller.scrollLeft;
+  dragged = false;
+  scroller.setPointerCapture(event.pointerId);
+}
+function onWeekPointerMove(event: PointerEvent) {
+  if (event.pointerId !== dragPointer) return;
+  const scroller = weekScroller.value;
+  if (!scroller) return;
+  const delta = event.clientX - dragOrigin;
+  if (Math.abs(delta) > 4) {
+    dragged = true;
+    weekDragging.value = true;
+  }
+  if (!dragged) return;
+  const max = scroller.scrollWidth - scroller.clientWidth;
+  scroller.scrollLeft = Math.min(max, Math.max(0, dragScroll - delta));
+}
+function onWeekPointerUp(event: PointerEvent) {
+  if (event.pointerId !== dragPointer) return;
+  dragPointer = -1;
+  weekDragging.value = false;
+  setTimeout(() => {
+    dragged = false;
+  }, 0);
+}
 function choose(i: number) {
-  if (busy.value) return;
+  if (busy.value || dragged) return;
   day.value = i;
   items.value = copy(app.plans[selected.value] || []);
+  nextTick(() => revealDay(i));
 }
 async function generate() {
   if (conflicts.value.length) return;
@@ -185,7 +240,7 @@ async function generate() {
     const result = await api.plan(
       target,
       preference.value,
-      day.value,
+      Math.max(0, Math.min(6, day.value - PAST_DAYS)),
       taste.value.trim(),
       cuisine.value.trim(),
       restrictions.value.trim(),
@@ -298,15 +353,25 @@ async function save() {
       </p>
     </div>
   </section>
-  <div class="week-tabs">
+  <div
+    ref="weekScroller"
+    class="week-tabs"
+    :class="{ dragging: weekDragging }"
+    @pointerdown="onWeekPointerDown"
+    @pointermove="onWeekPointerMove"
+    @pointerup="onWeekPointerUp"
+    @pointercancel="onWeekPointerUp"
+  >
     <button
       v-for="(d, i) in dates"
       :key="d.key"
       :class="{ active: day === i }"
       :disabled="busy"
+      :aria-label="`${d.key} ${d.month}${d.date}日 ${d.label}`"
       @click="choose(i)"
     >
-      <span>{{ d.label }}</span
+      <span class="month">{{ d.month }}</span
+      ><span :class="{ 'is-today': d.label === '今天' }">{{ d.label }}</span
       ><strong>{{ d.date }}</strong
       ><small>{{ app.plans[d.key] ? "已保存" : "待安排" }}</small>
     </button>
@@ -471,10 +536,7 @@ async function save() {
 }
 @media (max-width: 720px) {
   .plan-filters {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .plan-filters > *:last-child {
-    grid-column: 1/-1;
+    grid-template-columns: minmax(0, 1fr);
   }
   .plan-settings-footer button {
     width: 100%;

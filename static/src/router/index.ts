@@ -10,6 +10,8 @@ import CommunityView from "../views/CommunityView.vue";
 import NutritionView from "../views/NutritionView.vue";
 import LanguageView from "../views/LanguageView.vue";
 import ProfileView from "../views/ProfileView.vue";
+import FavoritesView from "../views/FavoritesView.vue";
+import SavedPostsView from "../views/SavedPostsView.vue";
 
 export const pages = [
   {
@@ -98,6 +100,16 @@ export default createRouter({
       component: p.component,
       meta: { title: p.name },
     })),
+    {
+      path: "/favorites",
+      component: FavoritesView,
+      meta: { title: "重温美好时刻" },
+    },
+    {
+      path: "/favorites/posts",
+      component: SavedPostsView,
+      meta: { title: "重温宝藏动态" },
+    },
     { path: "/:pathMatch(.*)*", redirect: "/" },
   ],
   scrollBehavior: () => ({ top: 0 }),

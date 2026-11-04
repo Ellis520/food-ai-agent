@@ -20,6 +20,7 @@ export interface PostDraft {
 export interface Reply {
   id: number;
   author: string;
+  avatar: string | null;
   text: string;
   createdAt: string;
   mine: boolean;
@@ -28,6 +29,15 @@ export interface Reply {
 export interface Post extends Reply, PostDraft {
   imageCount: number;
   replyCount: number;
+  likeCount: number;
+  liked: boolean;
+  saved: boolean;
+}
+
+export interface Reaction {
+  likeCount: number;
+  liked: boolean;
+  saved: boolean;
 }
 
 interface Page<T> {
@@ -55,6 +65,15 @@ export const community = {
   },
   remove(postId: number) {
     return request(`/community/posts/${postId}`, undefined, "DELETE");
+  },
+  saved() {
+    return request<Page<Post>>("/community/posts/saved");
+  },
+  like(postId: number, on: boolean) {
+    return request<Reaction>(`/community/posts/${postId}/like`, { on }, "PUT");
+  },
+  save(postId: number, on: boolean) {
+    return request<Reaction>(`/community/posts/${postId}/save`, { on }, "PUT");
   },
   replies(postId: number, before: number | null) {
     return request<Page<Reply>>(

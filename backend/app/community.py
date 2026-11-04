@@ -50,6 +50,18 @@ CREATE TABLE IF NOT EXISTS community_replies (
     UNIQUE(post_id, owner, request_id)
 );
 CREATE INDEX IF NOT EXISTS community_replies_post ON community_replies(post_id, id);
+CREATE TABLE IF NOT EXISTS community_likes (
+    post_id INTEGER NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
+    owner TEXT NOT NULL,
+    PRIMARY KEY (post_id, owner)
+);
+CREATE TABLE IF NOT EXISTS community_saves (
+    post_id INTEGER NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
+    owner TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY (post_id, owner)
+);
+CREATE INDEX IF NOT EXISTS community_saves_owner ON community_saves(owner, created_at);
 """
 
 
@@ -76,6 +88,11 @@ class ReplyInput(BaseModel):
     model_config = ConfigDict(extra='forbid', str_strip_whitespace=True)
     requestId: UUID
     text: str = Field(min_length=1, max_length=300)
+
+
+class ReactionInput(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    on: bool
 
 
 async def limited_json(request: Request, model, limit: int):
@@ -127,18 +144,38 @@ def display_name(db, owner):
     return json.loads(row['data']).get('profile', {}).get('name', '').strip() or '食刻同学'
 
 
-def post_data(row, owner):
+def profile_avatars(db, owners):
+    ids = list({owner for owner in owners if owner})
+    if not ids:
+        return {}
+    marks = ','.join('?' for _ in ids)
+    rows = db.execute(f'SELECT id, data FROM sessions WHERE id IN ({marks})', ids).fetchall()
+    photos = {}
+    prefix = 'data:image/jpeg;base64,'
+    for row in rows:
+        try:
+            avatar = json.loads(row['data']).get('profile', {}).get('avatar')
+        except (TypeError, json.JSONDecodeError):
+            avatar = None
+        photos[row['id']] = (
+            avatar if isinstance(avatar, str) and avatar.startswith(prefix) and len(avatar) <= 100_000 else None
+        )
+    return photos
+
+
+def post_data(row, owner, avatar):
     return {
-        'id': row['id'], 'author': row['author'], 'category': row['category'],
+        'id': row['id'], 'author': row['author'], 'avatar': avatar, 'category': row['category'],
         'food': row['food'], 'place': row['place'], 'meetup': row['meetup'],
         'text': row['body'], 'createdAt': row['created_at'], 'mine': row['owner'] == owner,
         'imageCount': row['image_count'], 'replyCount': row['reply_count'],
+        'likeCount': row['like_count'], 'liked': bool(row['liked']), 'saved': bool(row['saved']),
     }
 
 
-def reply_data(row, owner):
+def reply_data(row, owner, avatar):
     return {
-        'id': row['id'], 'author': row['author'], 'text': row['body'],
+        'id': row['id'], 'author': row['author'], 'avatar': avatar, 'text': row['body'],
         'createdAt': row['created_at'], 'mine': row['owner'] == owner,
     }
 
@@ -151,7 +188,10 @@ def store_key(name: str) -> str:
 POST_SELECT = """
     SELECT p.*,
       (SELECT COUNT(*) FROM community_images WHERE post_id=p.id) AS image_count,
-      (SELECT COUNT(*) FROM community_replies WHERE post_id=p.id) AS reply_count
+      (SELECT COUNT(*) FROM community_replies WHERE post_id=p.id) AS reply_count,
+      (SELECT COUNT(*) FROM community_likes WHERE post_id=p.id) AS like_count,
+      EXISTS(SELECT 1 FROM community_likes WHERE post_id=p.id AND owner=?) AS liked,
+      EXISTS(SELECT 1 FROM community_saves WHERE post_id=p.id AND owner=?) AS saved
     FROM community_posts p
 """
 
@@ -191,8 +231,9 @@ def community_router(connect, session_id):
                        OR instr(lower(p.body), lower(?)))
             """ + (" AND p.category!='buddy' AND matches_store(p.place, p.body)" if store is not None else "")
                 + " ORDER BY p.id DESC LIMIT 21",
-                (category, category, before, before, term, term, term)).fetchall()
-        return {'data': {'items': [post_data(row, owner) for row in rows[:20]],
+                (owner, owner, category, category, before, before, term, term, term)).fetchall()
+            photos = profile_avatars(db, [row['owner'] for row in rows[:20]])
+        return {'data': {'items': [post_data(row, owner, photos.get(row['owner'])) for row in rows[:20]],
                          'next': rows[19]['id'] if len(rows) > 20 else None}, 'source': 'sqlite'}
 
     @router.post('/posts')
@@ -210,8 +251,9 @@ def community_router(connect, session_id):
                 db.executemany('INSERT INTO community_images VALUES(?,?,?)',
                                [(result.lastrowid, position, image) for position, image in enumerate(images)])
             row = db.execute(POST_SELECT + ' WHERE p.owner=? AND p.request_id=?',
-                             (owner, str(body.requestId))).fetchone()
-        return {'data': post_data(row, owner), 'source': 'sqlite'}
+                             (owner, owner, owner, str(body.requestId))).fetchone()
+            photo = profile_avatars(db, [owner]).get(owner)
+        return {'data': post_data(row, owner, photo), 'source': 'sqlite'}
 
     @router.get('/posts/{post_id}/images/{position}')
     def image(post_id: int, position: int, request: Request):
@@ -233,6 +275,61 @@ def community_router(connect, session_id):
                 raise HTTPException(404, '帖子不存在或你不是发布者。')
         return {'data': {'deleted': True}, 'source': 'sqlite'}
 
+    def reaction(db, post_id, owner):
+        if not db.execute('SELECT 1 FROM community_posts WHERE id=?', (post_id,)).fetchone():
+            raise HTTPException(404, '帖子已删除。')
+        row = db.execute("""
+            SELECT
+              (SELECT COUNT(*) FROM community_likes WHERE post_id=?) AS like_count,
+              EXISTS(SELECT 1 FROM community_likes WHERE post_id=? AND owner=?) AS liked,
+              EXISTS(SELECT 1 FROM community_saves WHERE post_id=? AND owner=?) AS saved
+        """, (post_id, post_id, owner, post_id, owner)).fetchone()
+        return {'likeCount': row['like_count'], 'liked': bool(row['liked']), 'saved': bool(row['saved'])}
+
+    @router.get('/posts/saved')
+    def saved_posts(request: Request, response: Response):
+        owner = session_id(request)
+        response.headers['Cache-Control'] = 'no-store'
+        with database() as db:
+            rows = db.execute(POST_SELECT + """
+                JOIN community_saves s ON s.post_id=p.id AND s.owner=?
+                ORDER BY s.created_at DESC, p.id DESC
+                LIMIT 50
+            """, (owner, owner, owner)).fetchall()
+            photos = profile_avatars(db, [row['owner'] for row in rows])
+        return {'data': {'items': [post_data(row, owner, photos.get(row['owner'])) for row in rows],
+                         'next': None}, 'source': 'sqlite'}
+
+    @router.put('/posts/{post_id}/like')
+    def set_like(post_id: int, request: Request, body: ReactionInput):
+        owner = session_id(request)
+        with database() as db:
+            if not db.execute('SELECT 1 FROM community_posts WHERE id=?', (post_id,)).fetchone():
+                raise HTTPException(404, '帖子已删除。')
+            if body.on:
+                db.execute('INSERT INTO community_likes(post_id, owner) VALUES(?,?) ON CONFLICT DO NOTHING',
+                           (post_id, owner))
+            else:
+                db.execute('DELETE FROM community_likes WHERE post_id=? AND owner=?', (post_id, owner))
+            state = reaction(db, post_id, owner)
+        return {'data': state, 'source': 'sqlite'}
+
+    @router.put('/posts/{post_id}/save')
+    def set_save(post_id: int, request: Request, body: ReactionInput):
+        owner = session_id(request)
+        with database() as db:
+            if not db.execute('SELECT 1 FROM community_posts WHERE id=?', (post_id,)).fetchone():
+                raise HTTPException(404, '帖子已删除。')
+            if body.on:
+                db.execute("""
+                    INSERT INTO community_saves(post_id, owner, created_at) VALUES(?,?,?)
+                    ON CONFLICT DO NOTHING
+                """, (post_id, owner, datetime.now(timezone.utc).isoformat()))
+            else:
+                db.execute('DELETE FROM community_saves WHERE post_id=? AND owner=?', (post_id, owner))
+            state = reaction(db, post_id, owner)
+        return {'data': state, 'source': 'sqlite'}
+
     @router.get('/posts/{post_id}/replies')
     def list_replies(post_id: int, request: Request, response: Response,
                      before: int | None = Query(default=None, gt=0)):
@@ -245,7 +342,9 @@ def community_router(connect, session_id):
                 SELECT * FROM community_replies WHERE post_id=? AND (? IS NULL OR id<?)
                 ORDER BY id DESC LIMIT 31
             """, (post_id, before, before)).fetchall()
-        return {'data': {'items': [reply_data(row, owner) for row in reversed(rows[:30])],
+            shown = list(reversed(rows[:30]))
+            photos = profile_avatars(db, [row['owner'] for row in shown])
+        return {'data': {'items': [reply_data(row, owner, photos.get(row['owner'])) for row in shown],
                          'next': rows[29]['id'] if len(rows) > 30 else None}, 'source': 'sqlite'}
 
     @router.post('/posts/{post_id}/replies')
@@ -262,7 +361,8 @@ def community_router(connect, session_id):
                 raise HTTPException(404, '帖子已删除。') from error
             row = db.execute('SELECT * FROM community_replies WHERE post_id=? AND owner=? AND request_id=?',
                              (post_id, owner, str(body.requestId))).fetchone()
-        return {'data': reply_data(row, owner), 'source': 'sqlite'}
+            photo = profile_avatars(db, [owner]).get(owner)
+        return {'data': reply_data(row, owner, photo), 'source': 'sqlite'}
 
     @router.delete('/posts/{post_id}/replies/{reply_id}')
     def delete_reply(post_id: int, reply_id: int, request: Request):
