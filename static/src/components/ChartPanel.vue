@@ -38,7 +38,7 @@ function draw() {
         trigger: "axis",
         valueFormatter: (v: unknown) => `${v} ${props.unit || ""}`,
       },
-      grid: { left: 48, right: 20, top: 20, bottom: 35 },
+      grid: { left: 2, right: 6, top: 12, bottom: 0, containLabel: true },
       dataZoom: canSlide.value
         ? [
             {
@@ -61,12 +61,17 @@ function draw() {
         data: props.labels,
         axisLine: { lineStyle: { color: "#e4e9e3" } },
         axisTick: { show: false },
-        axisLabel: { color: "#7b877d", interval: 0 },
+        axisLabel: {
+          color: "#7b877d",
+          fontSize: 11,
+          interval: 0,
+          margin: 8,
+        },
       },
       yAxis: {
         type: "value",
         splitLine: { lineStyle: { color: "#eef1ec" } },
-        axisLabel: { color: "#7b877d" },
+        axisLabel: { color: "#7b877d", fontSize: 11, margin: 4 },
       },
       series: [
         {

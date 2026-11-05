@@ -88,9 +88,9 @@ watch(
           }}</strong>
         </div>
         <div class="topbar-right">
-          <span class="mode-dot"></span
-          ><span>{{ isDemo ? "演示模式" : "API 对接模式" }}</span
-          ><span class="topbar-divider"></span
+          <template v-if="isDemo"
+            ><span class="mode-dot"></span><span>演示模式</span
+            ><span class="topbar-divider"></span></template
           ><RouterLink
             to="/profile"
             class="avatar small-avatar"
@@ -104,15 +104,10 @@ watch(
         </div>
       </header>
       <main id="main" tabindex="-1">
-        <div class="demo-strip">
-          <Icon name="Info" :size="15" /><span>{{
-            isDemo
-              ? "当前为前端演示：AI 为规则回复，地图与商家为示例，语音尚未接入。"
-              : "后端模式：记录保存到 SQLite；AI、地图与语音按配置连接，未配置时明确提示。"
-          }}</span
-          ><RouterLink to="/profile"
-            >服务配置</RouterLink>
-          >
+        <div v-if="isDemo" class="demo-strip">
+          <Icon name="Info" :size="15" /><span
+            >当前为前端演示：AI 为规则回复，地图与商家为示例，语音尚未接入。</span
+          ><RouterLink to="/profile">服务配置</RouterLink>
         </div>
         <div v-if="app.storageError" role="alert" class="notice error">
           {{ app.storageError }}

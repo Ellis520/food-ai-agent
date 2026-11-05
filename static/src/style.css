@@ -394,12 +394,6 @@ main {
   margin-top: 7px;
   font-size: 12px;
 }
-.wave {
-  color: #d8a35c;
-  font-size: 30px;
-  margin-left: 6px;
-  display: inline-block;
-}
 .date-label {
   display: flex;
   align-items: center;
@@ -2242,7 +2236,10 @@ footer {
   }
   .home-greeting p {
     font-size: 10px;
-    max-width: 240px;
+  }
+  .home-greeting .greeting-line {
+    max-width: none;
+    white-space: nowrap;
   }
   .date-label {
     font-size: 9px;
@@ -2654,7 +2651,7 @@ aside.sidebar .sidebar-note {
 }
 .app-body .topbar {
   height: 64px;
-  background: transparent;
+  background: #e8ede5;
   font-size: 14px;
 }
 .app-body .demo-strip {
@@ -2685,18 +2682,15 @@ aside.sidebar .sidebar-note {
   margin: 0;
   color: #1a241c;
 }
-.app-body .home-greeting .wave {
-  color: #c6a15a;
-  font-size: 26px;
-  font-weight: 400;
-  margin-left: 10px;
-  vertical-align: 4px;
-}
 .app-body .home-greeting p {
   margin-top: 8px;
   font-size: 15px;
   line-height: 1.6;
   color: #6a786e;
+}
+.app-body .home-greeting .greeting-line {
+  white-space: nowrap;
+  max-width: none;
 }
 .app-body .home-greeting .date-label {
   display: flex;

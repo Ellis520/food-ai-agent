@@ -40,7 +40,6 @@ function resetAvatar() {
     >
     <div class="avatar-controls">
       <strong>{{ nickname.trim() || "您的昵称" }}</strong>
-      <p class="source-note">头像选填，支持 JPG、PNG 或 WebP，最大 10 MB。</p>
       <div class="actions">
         <button
           type="button"
@@ -99,9 +98,6 @@ function resetAvatar() {
   margin-top: 8px;
   flex-wrap: wrap;
   gap: 6px 12px;
-}
-.avatar-controls .source-note {
-  margin: 4px 0;
 }
 .avatar-field > .error {
   grid-column: 1/-1;

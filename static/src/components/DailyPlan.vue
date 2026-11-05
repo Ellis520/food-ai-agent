@@ -120,9 +120,9 @@ const completed = computed(
   border-radius: 0;
   padding: 12px 0;
   display: grid;
-  grid-template-columns: 4.5em minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   background: transparent;
 }
 .empty-meals li {
@@ -145,6 +145,9 @@ const completed = computed(
   font-size: 18px;
   margin-right: 4px;
 }
+.meal-copy {
+  min-width: 0;
+}
 .meal-copy h3 {
   font-size: 15px;
   font-weight: 600;
@@ -156,6 +159,16 @@ const completed = computed(
 .daily-plan-meal > span {
   justify-self: end;
 }
+.daily-plan-meal > a.secondary {
+  align-self: stretch;
+  box-sizing: border-box;
+  height: auto;
+  padding: 0 10px;
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 10px;
+  white-space: nowrap;
+}
 .plan-start {
   display: block;
 }
@@ -163,14 +176,12 @@ const completed = computed(
   margin-top: 14px;
 }
 @media (max-width: 720px) {
-  .daily-plan-meal,
-  .empty-meals li {
-    grid-template-columns: 4.2em minmax(0, 1fr);
+  .daily-plan-meal {
+    gap: 10px;
   }
-  .daily-plan-meal > a,
-  .daily-plan-meal > span:last-child {
-    grid-column: 2;
-    justify-self: start;
+  .daily-plan-meal > a.secondary {
+    padding: 0 10px;
+    font-size: 13px;
   }
 }
 </style>

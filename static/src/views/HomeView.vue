@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useApp } from "../stores/app";
-import DailyPlan from "../components/DailyPlan.vue";
 import Icon from "../components/Icon.vue";
 const app = useApp();
 const greetingDate = computed(() => {
@@ -24,11 +23,8 @@ const shortcuts = [
   <header class="home-greeting">
     <div>
       <span class="eyebrow">今日食刻</span>
-      <h1>
-        嗨，{{ app.profile.name }}
-        <span class="wave" aria-hidden="true">✳</span>
-      </h1>
-      <p>今天也要好好吃饭，让生活多一点好滋味。</p>
+      <h1>嗨，{{ app.profile.name }}</h1>
+      <p class="greeting-line">今天也要好好吃饭，让生活多一点好滋味。</p>
     </div>
     <p class="date-label">
       <Icon name="CalendarDays" :size="16" />
@@ -58,33 +54,6 @@ const shortcuts = [
         <span class="status-dot"></span> 今日份的元气，已就位
       </div>
     </div>
-  </section>
-  <DailyPlan :date="app.today" compact />
-  <section class="stats-grid" aria-label="今日饮食">
-    <article class="stat">
-      <p>
-        {{ app.caloriesIncomplete ? "今日摄入（已知部分）" : "今日摄入" }}
-      </p>
-      <strong>{{ app.calories.toLocaleString() }} <small>kcal</small></strong>
-      <span class="small muted">参考目标 {{ app.profile.kcal }} kcal</span>
-    </article>
-    <article class="stat">
-      <p>已记录餐次</p>
-      <strong>{{ app.todayMeals.length }} <small>餐</small></strong>
-      <span class="small muted">只算已经确认的</span>
-    </article>
-    <article class="stat">
-      <p>今日饮食支出</p>
-      <strong
-        >¥{{ app.spent.toFixed(0) }}
-        <small>/ ¥{{ app.profile.budget }}</small></strong
-      >
-      <span class="small muted">{{
-        app.spent > app.profile.budget
-          ? "已超出日预算"
-          : "预算还剩 ¥" + (app.profile.budget - app.spent).toFixed(0)
-      }}</span>
-    </article>
   </section>
   <div class="section-heading">
     <h2>食刻服务</h2>

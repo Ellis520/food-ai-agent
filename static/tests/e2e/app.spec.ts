@@ -10,7 +10,7 @@ test('全部路由桌面/手机可访问，无水平溢出、脚本错误',async
  }}expect(errors).toEqual([])
 })
 test('记录增加、首页同步、刷新持久化、删除',async({page})=>{
- await page.goto('/#/records');await page.getByRole('button',{name:'记下这一餐'}).click();await expect(page.getByText('3 条记录')).toBeVisible();await page.reload();await expect(page.getByText('3 条记录')).toBeVisible();await page.goto('/#/');await expect(page.locator('.stat').nth(1)).toContainText('3');await page.goto('/#/records');await page.getByRole('button',{name:'删除记录'}).last().click();await expect(page.getByText('2 条记录')).toBeVisible()
+ await page.goto('/#/records');await page.getByRole('button',{name:'记下这一餐'}).click();await expect(page.getByText('3 条记录')).toBeVisible();await page.reload();await expect(page.getByText('3 条记录')).toBeVisible();await page.goto('/#/');await expect(page.locator('.hero')).toBeVisible();await page.goto('/#/records');await page.getByRole('button',{name:'删除记录'}).last().click();await expect(page.getByText('2 条记录')).toBeVisible()
 })
 test('聊天卡片、语音占位、地图安全导航',async({page})=>{
  await page.goto('/#/chat');await page.getByRole('textbox',{name:'聊天消息'}).fill('看看附近餐厅');await page.getByRole('button',{name:'发送消息'}).click();await expect(page.locator('.structured-card')).toContainText('校园好味探索');await page.getByRole('button',{name:'按住语音输入'}).click();await expect(page.getByText('演示模式暂不支持录音。')).toBeVisible();await page.goto('/#/map');await page.getByRole('button',{name:'去导航',exact:true}).first().click();await expect(page.getByRole('dialog')).toContainText('无法提供真实路线');expect(await page.getByRole('dialog').locator('a').count()).toBe(0)

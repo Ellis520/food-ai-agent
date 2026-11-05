@@ -23,6 +23,10 @@ function getPreference(field: "taste" | "cuisine", options: string[]) {
       .join("、")
   );
 }
+function shownChoice(value: string | null | undefined) {
+  const text = (value ?? "").trim();
+  return text === "不限" ? "" : (value ?? "");
+}
 </script>
 
 <template>
@@ -35,8 +39,12 @@ function getPreference(field: "taste" | "cuisine", options: string[]) {
         placeholder="您希望大家怎么称呼您？"
     /></label>
     <label
-      >校园<select v-model="draft.campus" required>
-        <option v-if="!draft.campus" value="" disabled>请选择校园</option>
+      >校园<select
+        v-model="draft.campus"
+        required
+        :class="{ 'is-unset': !draft.campus }"
+      >
+        <option v-if="!draft.campus" value="" disabled>请选择</option>
         <option v-for="campus in campuses" :key="campus" :value="campus">
           {{ campus }}
         </option>
@@ -53,6 +61,7 @@ function getPreference(field: "taste" | "cuisine", options: string[]) {
         max="200"
         step="any"
         required
+        placeholder="请填写"
     /></label>
     <label
       >每日热量目标（kcal）<input
@@ -62,6 +71,7 @@ function getPreference(field: "taste" | "cuisine", options: string[]) {
         min="500"
         max="5000"
         required
+        placeholder="请填写"
     /></label>
   </div>
   <label v-if="showGoal"
@@ -73,42 +83,45 @@ function getPreference(field: "taste" | "cuisine", options: string[]) {
   >
   <div class="two-col profile-fields-row">
     <PlanPreference
-      :model-value="getPreference('taste', tastes)"
+      :model-value="shownChoice(getPreference('taste', tastes))"
       @update:model-value="draft.taste = $event"
       label="口味"
       :options="tastes"
       :disabled="false"
       :max-length="60"
       multiple
-      placeholder="不限"
+      placeholder="请选择"
     />
     <PlanPreference
-      :model-value="getPreference('cuisine', cuisines)"
+      :model-value="shownChoice(getPreference('cuisine', cuisines))"
       @update:model-value="draft.cuisine = $event"
       label="菜系"
       :options="cuisines"
       :disabled="false"
       :max-length="60"
       multiple
-      placeholder="不限"
+      placeholder="请选择"
     />
   </div>
   <PlanPreference
-    v-model="draft.preference"
+    :model-value="shownChoice(draft.preference)"
+    @update:model-value="draft.preference = $event"
     label="饮食偏好"
     :options="eatingStyles"
     :disabled="false"
     :max-length="200"
     multiple
+    placeholder="请选择"
   />
   <PlanPreference
-    v-model="draft.allergies"
+    :model-value="shownChoice(draft.allergies)"
+    @update:model-value="draft.allergies = $event"
     label="过敏原 / 饮食禁忌（选填）"
     :options="dietaryRestrictions"
     :disabled="false"
     :max-length="200"
     multiple
-    placeholder="不限"
+    placeholder="请选择"
   />
 </template>
 
@@ -125,6 +138,12 @@ select {
   width: 100%;
   min-width: 0;
   min-height: 44px;
+}
+select.is-unset {
+  color: #acb4a6;
+}
+select.is-unset option {
+  color: var(--ink);
 }
 @media (max-width: 480px) {
   .profile-fields-row {

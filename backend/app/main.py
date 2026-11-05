@@ -235,6 +235,14 @@ def session_id(request: Request):
     return sid
 
 app = FastAPI(title='食刻AI', version='2.0.0')
+
+@app.middleware('http')
+async def keep_pages_fresh(request: Request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if path == '/' or path.endswith('.html'):
+        response.headers['Cache-Control'] = 'no-cache'
+    return response
 app.add_middleware(CORSMiddleware, allow_origins=os.getenv('CORS_ORIGINS','http://localhost:5173,http://127.0.0.1:5173').split(','), allow_credentials=True, allow_methods=['GET','PUT','POST','DELETE'], allow_headers=['Content-Type'])
 app.include_router(community_router(connect, session_id))
 

@@ -16,6 +16,10 @@ import HabitReport from "../components/HabitReport.vue";
 import Icon from "../components/Icon.vue";
 const ChartPanel = defineAsyncComponent({
   loader: () => import("../components/ChartPanel.vue"),
+  onError(_error, retry, fail, attempts) {
+    if (attempts <= 3) setTimeout(() => retry(), 400 * attempts);
+    else fail();
+  },
   errorComponent: () =>
     h(
       "p",

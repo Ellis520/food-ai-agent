@@ -9,7 +9,16 @@ const props = defineProps<{ revisiting: boolean }>();
 const emit = defineEmits<{ saved: []; cancel: [] }>();
 const app = useApp();
 const draft = ref({ ...app.profile });
-if (!props.revisiting && draft.value.name === "小食同学") draft.value.name = "";
+if (!props.revisiting) {
+  if (draft.value.name === "小食同学") draft.value.name = "";
+  if (
+    draft.value.campus === "中山大学南校区" ||
+    draft.value.campus === "青禾大学 · 示例校园"
+  )
+    draft.value.campus = "";
+  if (draft.value.budget === 45) draft.value.budget = "" as unknown as number;
+  if (draft.value.kcal === 2000) draft.value.kcal = "" as unknown as number;
+}
 const saving = ref(false),
   preparingAvatar = ref(false);
 const validation = ref("");
@@ -95,10 +104,13 @@ async function submit() {
   align-items: center;
 }
 .setup-intro {
+  display: flex;
+  justify-content: center;
   padding: clamp(18px, 3vw, 32px);
   border-radius: 8px;
   background: transparent;
   border-top: 1px solid var(--border);
+  text-align: center;
 }
 .setup-brand {
   display: inline-grid;
@@ -124,6 +136,7 @@ async function submit() {
   color: var(--ink);
   margin: 0;
   white-space: nowrap;
+  text-align: center;
 }
 .setup-form {
   display: grid;
