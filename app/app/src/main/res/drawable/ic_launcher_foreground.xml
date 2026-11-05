@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  自适应图标前景：lucide Sprout（ISC License），白色描边，透明底。
+
+  尺寸刻意做小，四周留足品牌绿：
+  原始 lucide 24x24 坐标系的图形可视范围约 4..20（16 单位），
+  按 scale=2.025 放大后占 108dp 画布的 37.8..70.2（约 32.4dp）。
+  系统裁切后可见直径 72dp，图形约占可见区的 45%，四周余量充足；
+  离画布中心最远 16.2dp，远在安全圆半径 33dp 之内。
+  描边 1.8 * 2.025 = 3.645。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <group
+        android:translateX="29.7"
+        android:translateY="29.7"
+        android:scaleX="2.025"
+        android:scaleY="2.025">
+        <path
+            android:pathData="M7,20 L17,20"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="1.8"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M10,20c5.5,-2.5 0.8,-6.4 3,-10"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="1.8"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M9.5,9.4c1.1,0.8 1.8,2.2 2.3,3.7 -2,0.4 -3.5,0.4 -4.8,-0.3 -1.2,-0.6 -2.3,-1.9 -3,-4.2 2.8,-0.5 4.4,0 5.5,0.8z"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="1.8"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M14.1,6a7,7 0 0,0 -1.1,4c1.9,-0.1 3.3,-0.6 4.3,-1.4 1,-1 1.6,-2.3 1.7,-4.6 -2.7,0.1 -4,1 -4.9,2z"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="1.8"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
+</vector>

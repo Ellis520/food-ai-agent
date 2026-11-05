@@ -1,0 +1,28 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# 构建产物：模块下的 build 目录（含 app/build，约 190MB）
+build/
+
+# Release 产物：签名 APK 与混淆映射，不进版本库
+app/release/
+release/
+
+# Kotlin 增量编译缓存
+.kotlin/
+
+# IntelliJ / Android Studio
+.idea/
