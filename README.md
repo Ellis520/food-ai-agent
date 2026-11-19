@@ -56,17 +56,6 @@ Kotlin + Jetpack Compose，包名 `com.foodmoment.app`，最低 Android 7.0。�
 
 调试包在 `app/app/build/outputs/apk/debug/app-debug.apk`。Android Studio 打开 `app` 目录即可运行。页面包括首页、聊天、计划、记录、拍照识菜、附近商家、地图、习惯分析和设置。模型使用使用者自己填写的 OpenAI 兼容接口；高德 Key 也写在应用设置里，不经过网页后端。美食圈默认关闭，启用时把服务端地址指到上面的网页服务，例如 `http://<电脑局域网 IP>:8017`。构建细节、首次运行和已知限制见 [app/README.md](app/README.md)。
 
-## 组员分工
-
-| 成员 | 角色与职责 |
-| --- | --- |
-| 吴炫璋 | 负责主要前后端开发、AI 调试与服务器全流程搭建、Bug 修复与 UI 美化 |
-| 陈泫颖 | 队长，统筹项目安排，负责前端页面与交互开发 |
-| 樊响 | 负责前端设计优化 |
-| 易乐怡 | 负责 UI 优化、演示视频录制与海报设计 |
-| 赖纳 | 负责后端开发优化 |
-| 黄嘉鑫 | 负责 APP 开发、双端互联与应用优化 |
-
 [接口说明](docs/API.md) · [Gitee 协作流程](docs/GITEE.md)
 
 ## 开源许可
